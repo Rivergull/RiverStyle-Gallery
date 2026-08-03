@@ -96,6 +96,12 @@
   .hidden-pill:hover{ border-color:var(--line-2); color:var(--paper); }
   .hidden-pill[aria-pressed="true"]{ border-color:var(--river); color:var(--paper); }
   .hidden-pill svg{ width:14px; height:14px; }
+  .density{ display:inline-flex; gap:3px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:3px; }
+  .density button{ min-width:30px; height:28px; border:none; background:none; color:var(--paper-dim); font-size:12.5px; border-radius:999px; cursor:pointer; transition:background-color .15s,color .15s; font-variant-numeric:tabular-nums; }
+  .density button:hover{ color:var(--paper); }
+  .density button[aria-pressed="true"]{ background:var(--paper); color:var(--ink-deep); font-weight:600; }
+  [data-theme="light"] .density button[aria-pressed="true"]{ background:#191521; color:#F1F3F2; }
+  @media (max-width:560px){ .density{ display:none; } }
   .catbar{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; align-items:center; }
   body.show-hidden .catbar{ display:none; }
   .chip{ font-size:12.5px; letter-spacing:0.03em; color:var(--paper-dim); background:var(--surface); border:1px solid var(--line); padding:6px 13px; border-radius:999px; cursor:pointer; transition:all .16s; white-space:nowrap; }
@@ -106,7 +112,12 @@
   .chip.clear{ color:var(--muted); background:none; border-color:transparent; }
   .chip.clear:hover{ color:var(--paper); }
 
-  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(258px,1fr)); gap:clamp(16px,2.4vw,26px); padding:28px 0 80px; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(var(--card-min,256px),1fr)); gap:clamp(16px,2.4vw,26px); padding:28px 0 80px; }
+  .grid[data-cols="6"] .name{ font-size:17px; }
+  .grid[data-cols="8"] .name{ font-size:15px; line-height:1.1; }
+  .grid[data-cols="8"] .body{ padding:12px 12px 13px; gap:7px; }
+  .grid[data-cols="8"] .btn{ font-size:12px; padding:7px 9px; }
+  .grid[data-cols="8"] .cat{ font-size:10px; padding:2px 8px; }
   .plate{ position:relative; display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; animation:rise .5s cubic-bezier(.2,.7,.2,1) both; transition:border-color .22s, transform .22s; }
   .plate:hover{ border-color:var(--line-2); transform:translateY(-3px); }
   @keyframes rise{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:none;} }
@@ -181,10 +192,10 @@
 
   .x-close, .cv-nav, .cv-fav{ position:absolute; z-index:4; border:1px solid var(--line-2); background:rgba(16,13,24,0.72); color:#fff; width:42px; height:42px; border-radius:999px; cursor:pointer; display:grid; place-items:center; font-size:18px; transition:background-color .16s, border-color .16s, color .16s; backdrop-filter:blur(4px); }
   .x-close:hover, .cv-nav:hover{ background:var(--surface-2); border-color:#fff; }
-  .x-close{ top:12px; right:12px; }
+  .x-close{ top:12px; left:12px; }
   .cv-nav.prev{ top:50%; left:12px; transform:translateY(-50%); }
   .cv-nav.next{ top:50%; right:12px; transform:translateY(-50%); }
-  .cv-fav{ top:12px; left:12px; }
+  .cv-fav{ top:12px; right:12px; }
   .cv-fav svg{ width:19px; height:19px; }
   .cv-fav:hover{ background:var(--surface-2); border-color:#f5c451; color:#f5c451; }
   .cv-fav.on{ color:#f5c451; border-color:rgba(245,196,81,0.65); }
@@ -262,6 +273,11 @@
       </label>
       <span class="count" id="count"></span>
       <button class="hidden-pill" id="hiddenBar" hidden></button>
+      <div class="density" id="density" role="group" aria-label="Cards per row">
+        <button type="button" data-cols="4" title="4 per row">4</button>
+        <button type="button" data-cols="6" title="6 per row">6</button>
+        <button type="button" data-cols="8" title="8 per row">8</button>
+      </div>
     </div>
     <div class="catbar" id="catbar"></div>
   </div>
@@ -394,6 +410,7 @@
   };
   const KEY_STYLES = "rivergallery.v3.styles";
   const KEY_THEME  = "rivergallery.v1.theme";
+  const KEY_COLS   = "rivergallery.v1.cols";
   // Preview images: upload the Clio "krea2" folder + manifest.json into /images.
   const MANIFEST_URL = "images/manifest.json";
 
@@ -447,6 +464,18 @@
 
   const state = { search:"", view:null, showHidden:false, visible:[] };
   const grid=$("grid"), countEl=$("count"), catbar=$("catbar"), searchEl=$("search"), hiddenBar=$("hiddenBar");
+
+  const GRID_COLS = { "4":"256px", "6":"168px", "8":"120px" };
+  const density = $("density");
+  function applyCols(n){
+    n = GRID_COLS[n] ? n : "4";
+    grid.style.setProperty("--card-min", GRID_COLS[n]);
+    grid.dataset.cols = n;
+    store.set(KEY_COLS, n);
+    density.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.cols===n?"true":"false"));
+  }
+  density.querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=>applyCols(b.dataset.cols)) );
+  applyCols(store.get(KEY_COLS) || "4");
 
   function computeCategories(){
     const m={}; styles.forEach(s=>{ if(s.hidden) return; const c=s.category||"Uncategorized"; m[c]=(m[c]||0)+1; });
