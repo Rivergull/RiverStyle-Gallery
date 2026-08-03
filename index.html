@@ -147,10 +147,14 @@
   @keyframes fade{ from{opacity:0;} to{opacity:1;} }
 
   .card-view{ position:relative; width:min(560px,100%); max-height:90vh; display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--line-2); border-radius:18px; overflow:hidden; box-shadow:var(--shadow); }
-  .cv-media{ position:relative; background:var(--ink-deep); }
-  .cv-img{ display:grid; place-items:center; max-height:52vh; min-height:220px; overflow:hidden; background-size:cover; background-position:center; }
-  .cv-img img{ width:100%; max-height:52vh; object-fit:contain; display:block; }
+  .cv-media{ position:relative; overflow:hidden; background:var(--ink-deep); }
+  .cv-img{ display:flex; align-items:center; justify-content:center; overflow:hidden; background-size:cover; background-position:center; }
+  .cv-img.is-swatch{ min-height:240px; }
+  .cv-img img{ width:100%; height:auto; max-height:62vh; object-fit:contain; display:block; }
   .cv-img .glyph{ font-family:"Fraunces",serif; font-size:92px; color:rgba(255,255,255,0.34); }
+  .prompt-panel{ position:absolute; left:0; right:0; bottom:0; z-index:3; max-height:100%; transform:translateY(101%); transition:transform .3s cubic-bezier(.2,.7,.2,1); }
+  .card-view.prompt-open .prompt-panel{ transform:translateY(0); }
+  .card-view.prompt-open .lb-counter{ opacity:0; }
   .cv-body{ padding:20px clamp(18px,3vw,26px) 22px; display:flex; flex-direction:column; gap:11px; overflow-y:auto; }
   .cv-cat{ align-self:flex-start; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--river); background:var(--surface-2); border:1px solid var(--line); padding:4px 12px; border-radius:999px; }
   .cv-name{ font-family:"Fraunces",serif; font-weight:600; font-size:clamp(23px,4vw,31px); line-height:1.05; margin:0; letter-spacing:-0.01em; }
@@ -158,7 +162,7 @@
   .cv-toggle:hover{ border-color:var(--line-2); filter:brightness(1.12); }
   .cv-toggle svg{ width:14px; height:14px; transition:transform .18s; }
   .cv-toggle.open svg{ transform:rotate(180deg); }
-  .prompt{ font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px; line-height:1.65; color:var(--code-fg); background:var(--code-bg); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:15px; white-space:pre-wrap; word-break:break-word; max-height:32vh; overflow:auto; }
+  .prompt{ font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px; line-height:1.65; color:var(--code-fg); background:rgba(14,11,22,0.975); border:none; border-top:1px solid rgba(255,255,255,0.14); border-radius:14px 14px 0 0; padding:16px clamp(18px,3vw,26px); white-space:pre-wrap; word-break:break-word; max-height:100%; overflow:auto; margin:0; -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); }
   .cv-actions{ margin-top:4px; display:flex; gap:10px; }
 
   .btn-primary{ flex:1; font-size:14px; letter-spacing:0.02em; color:var(--ink-deep); background:var(--paper); border:none; border-radius:10px; padding:12px; cursor:pointer; transition:transform .12s, filter .16s; font-weight:500; }
@@ -263,6 +267,7 @@
   <div class="card-view">
     <div class="cv-media">
       <div class="cv-img" id="cvImg"></div>
+      <div class="prompt-panel"><div class="prompt" id="cvPrompt"></div></div>
       <button class="x-close" id="cvClose" aria-label="Close">×</button>
       <button class="cv-nav prev" id="cvPrev" aria-label="Previous style">‹</button>
       <button class="cv-nav next" id="cvNext" aria-label="Next style">›</button>
@@ -272,7 +277,6 @@
       <span class="cv-cat" id="cvCat"></span>
       <h2 class="cv-name" id="cvName"></h2>
       <button class="cv-toggle" id="cvToggle" aria-expanded="false"><span id="cvToggleLabel">Show prompt</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="prompt" id="cvPrompt" hidden></div>
       <div class="cv-actions"><button class="btn-primary" id="cvCopy">copy prompt</button></div>
     </div>
   </div>
@@ -485,12 +489,16 @@
   function fillMedia(el, s, big){
     el.innerHTML = "";
     const src = imageFor(s);
-    el.style.background = src ? (big ? "var(--ink-deep)" : "") : swatch(s.name);
-    const gl=document.createElement("span"); gl.className="glyph"; gl.textContent=initial(s.name); el.appendChild(gl);
     if (src){
+      el.classList.remove("is-swatch");
+      el.style.background = big ? "var(--ink-deep)" : "";
       const img=document.createElement("img"); img.loading="lazy"; img.alt=s.name; img.src=src;
-      img.addEventListener("error", () => { img.remove(); el.style.background=swatch(s.name); });
+      img.addEventListener("error", () => { el.innerHTML=""; el.classList.add("is-swatch"); el.style.background=swatch(s.name); const gl=document.createElement("span"); gl.className="glyph"; gl.textContent=initial(s.name); el.appendChild(gl); });
       el.appendChild(img);
+    } else {
+      el.classList.add("is-swatch");
+      el.style.background = swatch(s.name);
+      const gl=document.createElement("span"); gl.className="glyph"; gl.textContent=initial(s.name); el.appendChild(gl);
     }
   }
 
@@ -611,8 +619,9 @@
   function closeOverlay(el){ el.classList.remove("open"); if(!document.querySelector(".overlay.open")) document.body.classList.remove("modal-open"); if(lastFocus&&lastFocus.focus)lastFocus.focus(); }
 
   const viewer=$("viewer"), cvImg=$("cvImg"), cvCat=$("cvCat"), cvName=$("cvName"), cvPrompt=$("cvPrompt"), cvCopy=$("cvCopy"), cvCounter=$("cvCounter"), cvToggle=$("cvToggle"), cvToggleLabel=$("cvToggleLabel");
+  const cardView=viewer.querySelector(".card-view");
   let promptOpen=false;
-  function setPromptOpen(open){ promptOpen=open; cvPrompt.hidden=!open; cvToggle.setAttribute("aria-expanded", open?"true":"false"); cvToggle.classList.toggle("open", open); cvToggleLabel.textContent=open?"Hide prompt":"Show prompt"; if(open) cvPrompt.scrollTop=0; }
+  function setPromptOpen(open){ promptOpen=open; cardView.classList.toggle("prompt-open", open); cvToggle.setAttribute("aria-expanded", open?"true":"false"); cvToggle.classList.toggle("open", open); cvToggleLabel.textContent=open?"Hide prompt":"Show prompt"; if(open) cvPrompt.scrollTop=0; }
   cvToggle.addEventListener("click", ()=>setPromptOpen(!promptOpen));
   function openViewer(id){ const pos=state.visible.findIndex(s=>s._id===id); if(pos<0) return; fillViewer(pos); openOverlay(viewer); $("cvClose").focus(); }
   function fillViewer(pos){
