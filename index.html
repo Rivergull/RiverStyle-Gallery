@@ -118,13 +118,21 @@
   .media::after{ content:""; position:absolute; left:0; right:0; top:0; height:3px; background:var(--spectral); opacity:0; transition:opacity .25s; }
   .plate:hover .media::after{ opacity:0.95; }
 
-  .card-tools{ position:absolute; top:9px; right:9px; display:flex; gap:7px; z-index:3; opacity:0; pointer-events:none; transition:opacity .15s; }
+  .card-tools{ position:absolute; top:9px; display:flex; gap:7px; z-index:3; opacity:0; pointer-events:none; transition:opacity .15s; }
+  .card-tools.left{ left:9px; }
+  .card-tools.right{ right:9px; }
   .plate:hover .card-tools, body.editing .card-tools, body.show-hidden .card-tools{ opacity:1; pointer-events:auto; }
-  .card-tools button{ width:34px; height:34px; border-radius:9px; cursor:pointer; display:grid; place-items:center; background:rgba(12,9,20,0.72); color:#fff; border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(4px); transition:background-color .15s, border-color .15s; }
+  .plate.is-fav .card-tools.right{ opacity:1; pointer-events:auto; }
+  .card-tools button{ width:34px; height:34px; border-radius:9px; cursor:pointer; display:grid; place-items:center; background:rgba(12,9,20,0.72); color:#fff; border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(4px); transition:background-color .15s, border-color .15s, color .15s; }
   .card-tools button svg{ width:16px; height:16px; }
   .card-tools .hide:hover, .card-tools .unhide:hover{ background:var(--surface-2); border-color:#fff; }
   .card-tools .edit:hover{ background:var(--river); border-color:var(--river); }
   .card-tools .del:hover{ background:#d05a6a; border-color:#d05a6a; }
+  .card-tools .fav:hover{ border-color:#f5c451; color:#f5c451; }
+  .card-tools .fav.on{ color:#f5c451; border-color:rgba(245,196,81,0.6); }
+  .card-tools .fav.on svg{ fill:#f5c451; }
+  .hidden-pill[hidden]{ display:none; }
+  .chip .ic{ width:13px; height:13px; margin-right:6px; vertical-align:-2px; }
 
   .body{ padding:15px 16px 16px; display:flex; flex-direction:column; gap:10px; flex:1; }
   .name{ font-family:"Fraunces",serif; font-weight:600; font-size:19px; line-height:1.15; letter-spacing:-0.01em; margin:0; }
@@ -171,11 +179,16 @@
   .btn-primary:active{ transform:translateY(1px); }
   .btn-primary.copied{ background:var(--aqua); color:#08201c; }
 
-  .x-close, .cv-nav{ position:absolute; z-index:4; border:1px solid var(--line-2); background:rgba(16,13,24,0.72); color:#fff; width:42px; height:42px; border-radius:999px; cursor:pointer; display:grid; place-items:center; font-size:18px; transition:background-color .16s, border-color .16s; backdrop-filter:blur(4px); }
+  .x-close, .cv-nav, .cv-fav{ position:absolute; z-index:4; border:1px solid var(--line-2); background:rgba(16,13,24,0.72); color:#fff; width:42px; height:42px; border-radius:999px; cursor:pointer; display:grid; place-items:center; font-size:18px; transition:background-color .16s, border-color .16s, color .16s; backdrop-filter:blur(4px); }
   .x-close:hover, .cv-nav:hover{ background:var(--surface-2); border-color:#fff; }
   .x-close{ top:12px; right:12px; }
   .cv-nav.prev{ top:50%; left:12px; transform:translateY(-50%); }
   .cv-nav.next{ top:50%; right:12px; transform:translateY(-50%); }
+  .cv-fav{ top:12px; left:12px; }
+  .cv-fav svg{ width:19px; height:19px; }
+  .cv-fav:hover{ background:var(--surface-2); border-color:#f5c451; color:#f5c451; }
+  .cv-fav.on{ color:#f5c451; border-color:rgba(245,196,81,0.65); }
+  .cv-fav.on svg{ fill:#f5c451; }
   .lb-counter{ position:absolute; bottom:12px; left:12px; z-index:4; font-size:12px; letter-spacing:0.05em; color:#e7e2ee; background:rgba(16,13,24,0.7); padding:5px 11px; border-radius:999px; border:1px solid rgba(255,255,255,0.12); font-variant-numeric:tabular-nums; backdrop-filter:blur(4px); }
 
   .modal{ width:min(560px,100%); max-height:90vh; overflow-y:auto; background:var(--surface); border:1px solid var(--line-2); border-radius:16px; box-shadow:var(--shadow); padding:clamp(20px,3vw,30px); position:relative; }
@@ -268,6 +281,7 @@
     <div class="cv-media">
       <div class="cv-img" id="cvImg"></div>
       <div class="prompt-panel"><div class="prompt" id="cvPrompt"></div></div>
+      <button class="cv-fav" id="cvFav" aria-label="Add to favorites" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.9 6 6.6.6-5 4.4 1.5 6.5L12 16.9 5.5 20.5 7 14l-5-4.4 6.6-.6z"/></svg></button>
       <button class="x-close" id="cvClose" aria-label="Close">×</button>
       <button class="cv-nav prev" id="cvPrev" aria-label="Previous style">‹</button>
       <button class="cv-nav next" id="cvNext" aria-label="Next style">›</button>
@@ -403,10 +417,12 @@
       category:pickCategory(s),
       image:(s && s.image) ? String(s.image) : "",
       builtin:(typeof s.builtin==="boolean") ? s.builtin : !!defBuiltin,
-      hidden:!!(s && s.hidden)
+      hidden:!!(s && s.hidden),
+      favorite:!!(s && s.favorite),
+      createdAt:(s && typeof s.createdAt==="number") ? s.createdAt : 0
     }));
   }
-  const cleanStore = (s) => ({ name:s.name, prompt:s.prompt, category:s.category, image:s.image, builtin:s.builtin, hidden:s.hidden });
+  const cleanStore = (s) => ({ name:s.name, prompt:s.prompt, category:s.category, image:s.image, builtin:s.builtin, hidden:s.hidden, favorite:s.favorite, createdAt:s.createdAt });
   const cleanExport = (s) => ({ name:s.name, prompt:s.prompt, category:s.category, image:s.image });
   function asArray(j){ return Array.isArray(j) ? j : (j && Array.isArray(j.styles) ? j.styles : null); }
   function persist(){ store.set(KEY_STYLES, JSON.stringify(styles.map(cleanStore))); }
@@ -429,27 +445,33 @@
   $("themeBtn").addEventListener("click", () => applyTheme(rootEl.getAttribute("data-theme")==="light" ? "dark" : "light"));
   themeSeg.querySelectorAll("button").forEach(b => b.addEventListener("click", () => applyTheme(b.dataset.themeVal)));
 
-  const state = { search:"", category:null, showHidden:false, visible:[] };
+  const state = { search:"", view:null, showHidden:false, visible:[] };
   const grid=$("grid"), countEl=$("count"), catbar=$("catbar"), searchEl=$("search"), hiddenBar=$("hiddenBar");
 
   function computeCategories(){
     const m={}; styles.forEach(s=>{ if(s.hidden) return; const c=s.category||"Uncategorized"; m[c]=(m[c]||0)+1; });
     return Object.keys(m).map(k=>({name:k,count:m[k]})).sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name));
   }
+  const STAR_IC='<svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.9 6.2 6.8.7-5 4.6 1.4 6.7L12 17.6 5.9 20.2l1.4-6.7-5-4.6 6.8-.7z"/></svg>';
+  const LOCAL_IC='<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>';
+  function makeChip(label, pressed, onClick, extraClass){
+    const b=document.createElement("button"); b.className="chip"+(extraClass?(" "+extraClass):"");
+    b.innerHTML=label; b.setAttribute("aria-pressed", pressed?"true":"false");
+    b.addEventListener("click", onClick); catbar.appendChild(b); return b;
+  }
+  function setView(v){ if(state.showHidden){ state.showHidden=false; document.body.classList.remove("show-hidden"); } state.view=v; renderCats(); render(); }
   function renderCats(){
     const cats = computeCategories();
-    if (state.category!==null && !cats.some(c=>c.name===state.category)) state.category=null;
+    const localCount = styles.filter(s=>!s.builtin && !s.hidden).length;
+    const favCount = styles.filter(s=>s.favorite && !s.hidden).length;
+    if (state.view==="__local" && localCount===0) state.view=null;
+    if (state.view==="__fav" && favCount===0) state.view=null;
+    if (state.view && state.view.indexOf("__")!==0 && !cats.some(c=>c.name===state.view)) state.view=null;
     catbar.innerHTML="";
-    const all=document.createElement("button"); all.className="chip"; all.textContent="All";
-    all.setAttribute("aria-pressed", state.category===null?"true":"false");
-    all.addEventListener("click", ()=>{ state.category=null; renderCats(); render(); });
-    catbar.appendChild(all);
-    cats.forEach(c=>{
-      const b=document.createElement("button"); b.className="chip"; b.innerHTML = c.name + '<span class="n">'+c.count+'</span>';
-      b.setAttribute("aria-pressed", state.category===c.name?"true":"false");
-      b.addEventListener("click", ()=>{ state.category = (state.category===c.name?null:c.name); renderCats(); render(); });
-      catbar.appendChild(b);
-    });
+    makeChip("All", state.view===null, ()=>setView(null));
+    if (favCount>0) makeChip(STAR_IC+"Favorites"+'<span class="n">'+favCount+'</span>', state.view==="__fav", ()=>setView("__fav"), "special");
+    if (localCount>0) makeChip(LOCAL_IC+"Local Styles"+'<span class="n">'+localCount+'</span>', state.view==="__local", ()=>setView("__local"), "special");
+    cats.forEach(c=>{ makeChip(c.name+'<span class="n">'+c.count+'</span>', state.view===c.name, ()=>setView(state.view===c.name?null:c.name)); });
     if (state.search){
       const c=document.createElement("button"); c.className="chip clear"; c.textContent="clear search";
       c.addEventListener("click", ()=>{ state.search=""; searchEl.value=""; renderCats(); render(); });
@@ -458,9 +480,16 @@
   }
 
   function searchMatch(s){ if(!state.search) return true; const q=state.search.toLowerCase(); return (s.name+" "+s.prompt+" "+(s.category||"")).toLowerCase().includes(q); }
+  function viewMatch(s){
+    if (state.view===null) return true;
+    if (state.view==="__local") return !s.builtin;
+    if (state.view==="__fav") return !!s.favorite;
+    return s.category===state.view;
+  }
+  const byRecent = (a,b) => (b.createdAt||0)-(a.createdAt||0);
   function currentList(){
-    if (state.showHidden) return styles.filter(s=>s.hidden && searchMatch(s));
-    return styles.filter(s=>!s.hidden && (state.category===null||s.category===state.category) && searchMatch(s));
+    if (state.showHidden) return styles.filter(s=>s.hidden && searchMatch(s)).sort(byRecent);
+    return styles.filter(s=>!s.hidden && viewMatch(s) && searchMatch(s)).sort(byRecent);
   }
 
   // ---- preview images resolved from images/manifest.json (style name -> file) ----
@@ -506,7 +535,8 @@
     hide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a18 18 0 0 1-2.16 3.19M6.6 6.6A18 18 0 0 0 2 12s3 8 10 8a9 9 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 1 0 4.2 4.2"/><path d="M1 1l22 22"/></svg>',
     unhide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8Z"/><circle cx="12" cy="12" r="3"/></svg>',
     edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
-    del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>'
+    del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>',
+    star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.9 6 6.6.6-5 4.4 1.5 6.5L12 16.9 5.5 20.5 7 14l-5-4.4 6.6-.6z"/></svg>'
   };
 
   function updateHiddenBar(){
@@ -515,7 +545,7 @@
     hiddenBar.hidden=false;
     hiddenBar.setAttribute("aria-pressed", state.showHidden?"true":"false");
     hiddenBar.innerHTML = state.showHidden
-      ? ICON.unhide + "back to gallery ("+n+" hidden)"
+      ? ICON.unhide + "back to gallery"
       : ICON.hide + n + " hidden";
   }
 
@@ -536,7 +566,7 @@
     }
 
     list.forEach((s,idx) => {
-      const card=document.createElement("article"); card.className="plate"; card.style.animationDelay=Math.min(idx*20,240)+"ms";
+      const card=document.createElement("article"); card.className="plate"+(s.favorite?" is-fav":""); card.style.animationDelay=Math.min(idx*20,240)+"ms";
 
       const media=document.createElement("div");
       media.className="media"; media.setAttribute("role","button"); media.tabIndex=0; media.setAttribute("aria-label","Open "+s.name);
@@ -546,29 +576,35 @@
       media.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } });
       card.appendChild(media);
 
-      const tools=document.createElement("div"); tools.className="card-tools";
+      const left=document.createElement("div"); left.className="card-tools left";
       if (state.showHidden){
         const un=document.createElement("button"); un.className="unhide"; un.title="Unhide"; un.setAttribute("aria-label","Unhide "+s.name); un.innerHTML=ICON.unhide;
         un.addEventListener("click", e=>{ e.stopPropagation(); setHidden(s._id,false); });
-        tools.appendChild(un);
+        left.appendChild(un);
       } else {
         const hd=document.createElement("button"); hd.className="hide"; hd.title="Hide"; hd.setAttribute("aria-label","Hide "+s.name); hd.innerHTML=ICON.hide;
         hd.addEventListener("click", e=>{ e.stopPropagation(); setHidden(s._id,true); });
-        tools.appendChild(hd);
+        left.appendChild(hd);
         if (document.body.classList.contains("editing") && !s.builtin){
           const ed=document.createElement("button"); ed.className="edit"; ed.title="Edit style"; ed.setAttribute("aria-label","Edit "+s.name); ed.innerHTML=ICON.edit;
           ed.addEventListener("click", e=>{ e.stopPropagation(); openEditor(s._id); });
           const del=document.createElement("button"); del.className="del"; del.title="Delete style"; del.setAttribute("aria-label","Delete "+s.name); del.innerHTML=ICON.del;
           del.addEventListener("click", e=>{ e.stopPropagation(); removeStyle(s._id); });
-          tools.appendChild(ed); tools.appendChild(del);
+          left.appendChild(ed); left.appendChild(del);
         }
       }
-      card.appendChild(tools);
+      card.appendChild(left);
+
+      const right=document.createElement("div"); right.className="card-tools right";
+      const fav=document.createElement("button"); fav.className="fav"+(s.favorite?" on":""); fav.title=s.favorite?"Remove from Favorites":"Add to Favorites"; fav.setAttribute("aria-label",(s.favorite?"Remove ":"Add ")+s.name+" to favorites"); fav.innerHTML=ICON.star;
+      fav.addEventListener("click", e=>{ e.stopPropagation(); setFavorite(s._id, !s.favorite); });
+      right.appendChild(fav);
+      card.appendChild(right);
 
       const body=document.createElement("div"); body.className="body";
       if (s.category){
         const cat=document.createElement("button"); cat.className="cat"; cat.textContent=s.category;
-        cat.addEventListener("click", ()=>{ if(state.showHidden){ state.showHidden=false; document.body.classList.remove("show-hidden"); } state.category=s.category; renderCats(); render(); window.scrollTo({top:0,behavior:"smooth"}); });
+        cat.addEventListener("click", ()=>{ setView(s.category); window.scrollTo({top:0,behavior:"smooth"}); });
         body.appendChild(cat);
       }
       const name=document.createElement("h3"); name.className="name"; name.textContent=s.name; body.appendChild(name);
@@ -599,6 +635,11 @@
     s.hidden=val; persist(); renderCats(); render();
     toast(val ? "Style hidden" : "Style unhidden");
   }
+  function setFavorite(id, val){
+    const s=styles.find(x=>x._id===id); if(!s) return;
+    s.favorite=val; persist(); renderCats(); render();
+    toast(val ? "Added to Favorites" : "Removed from Favorites");
+  }
   function removeStyle(id){
     const s = styles.find(x=>x._id===id); if(!s || s.builtin) return;
     if (!confirm('Delete "'+s.name+'"? This can\'t be undone.')) return;
@@ -618,8 +659,9 @@
   function openOverlay(el){ el.classList.add("open"); document.body.classList.add("modal-open"); lastFocus=document.activeElement; }
   function closeOverlay(el){ el.classList.remove("open"); if(!document.querySelector(".overlay.open")) document.body.classList.remove("modal-open"); if(lastFocus&&lastFocus.focus)lastFocus.focus(); }
 
-  const viewer=$("viewer"), cvImg=$("cvImg"), cvCat=$("cvCat"), cvName=$("cvName"), cvPrompt=$("cvPrompt"), cvCopy=$("cvCopy"), cvCounter=$("cvCounter"), cvToggle=$("cvToggle"), cvToggleLabel=$("cvToggleLabel");
+  const viewer=$("viewer"), cvImg=$("cvImg"), cvCat=$("cvCat"), cvName=$("cvName"), cvPrompt=$("cvPrompt"), cvCopy=$("cvCopy"), cvCounter=$("cvCounter"), cvToggle=$("cvToggle"), cvToggleLabel=$("cvToggleLabel"), cvFav=$("cvFav");
   const cardView=viewer.querySelector(".card-view");
+  function updateCvFav(s){ cvFav.classList.toggle("on", !!s.favorite); cvFav.setAttribute("aria-pressed", s.favorite?"true":"false"); cvFav.setAttribute("aria-label",(s.favorite?"Remove ":"Add ")+s.name+" to favorites"); cvFav.title=s.favorite?"Remove from Favorites":"Add to Favorites"; }
   let promptOpen=false;
   function setPromptOpen(open){ promptOpen=open; cardView.classList.toggle("prompt-open", open); cvToggle.setAttribute("aria-expanded", open?"true":"false"); cvToggle.classList.toggle("open", open); cvToggleLabel.textContent=open?"Hide prompt":"Show prompt"; if(open) cvPrompt.scrollTop=0; }
   cvToggle.addEventListener("click", ()=>setPromptOpen(!promptOpen));
@@ -631,6 +673,8 @@
     cvName.textContent=s.name; cvPrompt.textContent=s.prompt||"(no prompt yet)";
     cvCounter.textContent=(pos+1)+" / "+state.visible.length;
     setPromptOpen(false);
+    updateCvFav(s);
+    cvFav.onclick=()=>{ setFavorite(s._id, !s.favorite); updateCvFav(s); };
     cvCopy.textContent="copy prompt"; cvCopy.classList.remove("copied");
     cvCopy.onclick=()=>copyText(s.prompt, cvCopy);
   }
@@ -680,7 +724,7 @@
     if(!name){ toast("Give your style a name"); edName.focus(); return; }
     const rec={ name, prompt:edPrompt.value, category:(edCategory.value.trim()||"Uncategorized"), image:editImage };
     if (editorTarget){ const s=styles.find(x=>x._id===editorTarget); if(s && !s.builtin) Object.assign(s, rec); }
-    else { styles.push(Object.assign({_id:newId(), builtin:false, hidden:false}, rec)); }
+    else { styles.push(Object.assign({_id:newId(), builtin:false, hidden:false, favorite:false, createdAt:Date.now()}, rec)); }
     persist(); closeOverlay(editor); renderCats(); render(); toast("Style saved");
   }
   $("edSave").addEventListener("click", saveEditor);
