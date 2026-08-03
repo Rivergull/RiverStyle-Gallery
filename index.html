@@ -102,6 +102,9 @@
   .density button[aria-pressed="true"]{ background:var(--paper); color:var(--ink-deep); font-weight:600; }
   [data-theme="light"] .density button[aria-pressed="true"]{ background:#191521; color:#F1F3F2; }
   @media (max-width:560px){ .density{ display:none; } }
+  .unhide-all{ font-size:12.5px; color:var(--paper); background:var(--surface-2); border:1px solid var(--line-2); border-radius:999px; padding:7px 14px; cursor:pointer; white-space:nowrap; transition:filter .16s, border-color .16s; }
+  .unhide-all:hover{ filter:brightness(1.12); border-color:var(--river); }
+  .unhide-all[hidden]{ display:none; }
   .catbar{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; align-items:center; }
   body.show-hidden .catbar{ display:none; }
   .chip{ font-size:12.5px; letter-spacing:0.03em; color:var(--paper-dim); background:var(--surface); border:1px solid var(--line); padding:6px 13px; border-radius:999px; cursor:pointer; transition:all .16s; white-space:nowrap; }
@@ -166,17 +169,17 @@
   @keyframes fade{ from{opacity:0;} to{opacity:1;} }
 
   .card-view{ position:relative; width:min(560px,100%); max-height:90vh; display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--line-2); border-radius:18px; overflow:hidden; box-shadow:var(--shadow); }
-  .cv-media{ position:relative; overflow:hidden; background:var(--ink-deep); }
+  .cv-media{ position:relative; overflow:hidden; background:var(--ink-deep); flex:0 1 auto; min-height:0; }
   .cv-img{ display:flex; align-items:center; justify-content:center; overflow:hidden; background-size:cover; background-position:center; }
   .cv-img.is-swatch{ min-height:240px; }
-  .cv-img img{ width:100%; height:auto; max-height:62vh; object-fit:contain; display:block; }
+  .cv-img img{ max-width:100%; max-height:56vh; width:auto; height:auto; object-fit:contain; display:block; }
   .cv-img .glyph{ font-family:"Fraunces",serif; font-size:92px; color:rgba(255,255,255,0.34); }
   .prompt-panel{ position:absolute; left:0; right:0; bottom:0; z-index:3; max-height:100%; transform:translateY(101%); transition:transform .3s cubic-bezier(.2,.7,.2,1); }
   .card-view.prompt-open .prompt-panel{ transform:translateY(0); }
   .card-view.prompt-open .lb-counter{ opacity:0; }
-  .cv-body{ padding:20px clamp(18px,3vw,26px) 22px; display:flex; flex-direction:column; gap:11px; overflow-y:auto; }
+  .cv-body{ padding:16px clamp(18px,3vw,26px) 18px; display:flex; flex-direction:column; gap:9px; overflow:hidden; flex:0 0 auto; }
   .cv-cat{ align-self:flex-start; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--river); background:var(--surface-2); border:1px solid var(--line); padding:4px 12px; border-radius:999px; }
-  .cv-name{ font-family:"Fraunces",serif; font-weight:600; font-size:clamp(23px,4vw,31px); line-height:1.05; margin:0; letter-spacing:-0.01em; }
+  .cv-name{ font-family:"Fraunces",serif; font-weight:600; font-size:clamp(20px,3vw,26px); line-height:1.05; margin:0; letter-spacing:-0.01em; }
   .cv-toggle{ align-self:flex-start; display:inline-flex; align-items:center; gap:8px; font-size:13px; letter-spacing:0.02em; color:var(--paper); background:var(--surface-2); border:1px solid var(--line); border-radius:9px; padding:9px 14px; cursor:pointer; transition:border-color .16s, filter .16s; }
   .cv-toggle:hover{ border-color:var(--line-2); filter:brightness(1.12); }
   .cv-toggle svg{ width:14px; height:14px; transition:transform .18s; }
@@ -273,6 +276,7 @@
       </label>
       <span class="count" id="count"></span>
       <button class="hidden-pill" id="hiddenBar" hidden></button>
+      <button class="unhide-all" id="unhideAll" type="button" hidden>Unhide all</button>
       <div class="density" id="density" role="group" aria-label="Cards per row">
         <button type="button" data-cols="4" title="4 per row">4</button>
         <button type="button" data-cols="6" title="6 per row">6</button>
@@ -463,7 +467,7 @@
   themeSeg.querySelectorAll("button").forEach(b => b.addEventListener("click", () => applyTheme(b.dataset.themeVal)));
 
   const state = { search:"", view:null, showHidden:false, visible:[] };
-  const grid=$("grid"), countEl=$("count"), catbar=$("catbar"), searchEl=$("search"), hiddenBar=$("hiddenBar");
+  const grid=$("grid"), countEl=$("count"), catbar=$("catbar"), searchEl=$("search"), hiddenBar=$("hiddenBar"), unhideAll=$("unhideAll");
 
   const GRID_COLS = { "4":"256px", "6":"168px", "8":"120px" };
   const density = $("density");
@@ -570,12 +574,13 @@
 
   function updateHiddenBar(){
     const n = styles.filter(s=>s.hidden).length;
-    if (n===0){ hiddenBar.hidden=true; if(state.showHidden){ state.showHidden=false; document.body.classList.remove("show-hidden"); } return; }
+    if (n===0){ hiddenBar.hidden=true; unhideAll.hidden=true; if(state.showHidden){ state.showHidden=false; document.body.classList.remove("show-hidden"); } return; }
     hiddenBar.hidden=false;
     hiddenBar.setAttribute("aria-pressed", state.showHidden?"true":"false");
     hiddenBar.innerHTML = state.showHidden
       ? ICON.unhide + "back to gallery"
       : ICON.hide + n + " hidden";
+    unhideAll.hidden = !state.showHidden;
   }
 
   function render(){
@@ -669,6 +674,13 @@
     s.favorite=val; persist(); renderCats(); render();
     toast(val ? "Added to Favorites" : "Removed from Favorites");
   }
+  function unhideAllStyles(){
+    let c=0; styles.forEach(s=>{ if(s.hidden){ s.hidden=false; c++; } });
+    if(!c) return;
+    persist(); state.showHidden=false; document.body.classList.remove("show-hidden");
+    renderCats(); render(); toast("Unhid "+c+" styles");
+  }
+  unhideAll.addEventListener("click", unhideAllStyles);
   function removeStyle(id){
     const s = styles.find(x=>x._id===id); if(!s || s.builtin) return;
     if (!confirm('Delete "'+s.name+'"? This can\'t be undone.')) return;
