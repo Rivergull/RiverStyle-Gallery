@@ -11,18 +11,17 @@
 <!--
   ════════════════════════════════════════════════════════════════════════
     ✦  RiverGallery  ✦
-    Add / edit / delete styles right in the page (toolbar: "+ New style",
-    "Edit", theme toggle, and the gear for Settings). Changes save in this
-    browser automatically.
-
-    IMPORT A WHOLE LIBRARY:
-    Settings → "Import collection" accepts either RiverGallery's own export
-    OR a list of { "name", "prompt", "section"/"category" } entries — e.g.
-    the community Clio style set (styles.json) it was inspired by.
-
-    PERMANENT LIBRARY (all devices): put a styles.json next to this file in
-    your repo. On a fresh browser the gallery loads it automatically; on a
-    browser that already has data, use Settings → "Load styles.json".
+    · Visitors can add their OWN style cards (editable/deletable by them).
+      The styles you ship (seed + styles.json) are locked — no edit/delete.
+    · Any card can be HIDDEN to declutter, then unhidden from the "N hidden"
+      bar. Hiding is personal to each browser; it never deletes anything.
+    · Import a whole library in Settings (RiverGallery export, or a list of
+      name / prompt / section|category entries such as the Clio set).
+    · Put a styles.json next to this file for a permanent library that loads
+      on every device (Settings → "Load styles.json").
+    · Preview images: upload the Clio "krea2" folder + manifest.json into an
+      /images folder in your repo; the app matches thumbnails to styles by name
+      automatically (Settings → "Load preview images" reloads them).
   ════════════════════════════════════════════════════════════════════════
 -->
 
@@ -42,6 +41,9 @@
     --line:rgba(20,16,30,0.10); --line-2:rgba(20,16,30,0.20); --focus:rgba(58,140,205,0.30);
     --shadow:0 24px 55px -34px rgba(30,40,60,0.45);
   }
+  /* kills the theme-flip "sweep": disable transitions for one frame on toggle */
+  .no-anim, .no-anim *{ transition:none !important; animation:none !important; }
+
   *{ box-sizing:border-box; }
   html{ -webkit-text-size-adjust:100%; }
   body{
@@ -50,7 +52,7 @@
       radial-gradient(120% 80% at 50% -10%, rgba(111,180,232,0.12), transparent 60%),
       radial-gradient(90% 60% at 100% 0%, rgba(127,216,201,0.07), transparent 55%),
       var(--ink);
-    line-height:1.5; letter-spacing:0.01em; transition:background-color .3s, color .3s;
+    line-height:1.5; letter-spacing:0.01em;
   }
   [data-theme="light"] body{
     background:
@@ -72,9 +74,6 @@
   .tbtn:active{ transform:translateY(1px); }
   .tbtn svg{ width:16px; height:16px; }
   .tbtn.icon{ padding:9px; }
-  .tbtn.primary{ background:var(--paper); color:var(--ink-deep); border-color:var(--paper); font-weight:500; }
-  [data-theme="light"] .tbtn.primary{ background:#191521; color:#F1F3F2; border-color:#191521; }
-  .tbtn.primary:hover{ filter:brightness(1.06); }
   .tbtn[aria-pressed="true"]{ background:var(--surface-2); border-color:var(--river); color:var(--paper); }
   .tbtn .moon{ display:none; }
   [data-theme="light"] .tbtn .moon{ display:inline; }
@@ -86,14 +85,19 @@
 
   .controls{ position:sticky; top:0; z-index:20; margin-top:30px; padding:14px 0; background:linear-gradient(180deg, var(--ink) 60%, rgba(0,0,0,0)); backdrop-filter:blur(7px); }
   .searchrow{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-  .search{ flex:1 1 260px; display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:11px 18px; transition:border-color .2s, box-shadow .2s; }
+  .search{ flex:1 1 240px; display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:11px 18px; transition:border-color .2s, box-shadow .2s; }
   .search:focus-within{ border-color:var(--line-2); box-shadow:0 0 0 3px var(--focus); }
   .search svg{ flex:none; opacity:0.5; }
   .search input{ flex:1; background:none; border:none; outline:none; color:var(--paper); font:inherit; font-size:15px; }
   .search input::placeholder{ color:var(--muted); }
   .count{ font-size:13px; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums; }
   .count b{ color:var(--paper); font-weight:500; }
+  .hidden-pill{ font-size:12.5px; letter-spacing:0.02em; color:var(--paper-dim); background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:7px 14px; cursor:pointer; white-space:nowrap; display:inline-flex; align-items:center; gap:7px; transition:border-color .16s, color .16s; }
+  .hidden-pill:hover{ border-color:var(--line-2); color:var(--paper); }
+  .hidden-pill[aria-pressed="true"]{ border-color:var(--river); color:var(--paper); }
+  .hidden-pill svg{ width:14px; height:14px; }
   .catbar{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; align-items:center; }
+  body.show-hidden .catbar{ display:none; }
   .chip{ font-size:12.5px; letter-spacing:0.03em; color:var(--paper-dim); background:var(--surface); border:1px solid var(--line); padding:6px 13px; border-radius:999px; cursor:pointer; transition:all .16s; white-space:nowrap; }
   .chip:hover{ border-color:var(--line-2); color:var(--paper); }
   .chip[aria-pressed="true"]{ color:var(--ink-deep); background:var(--paper); border-color:var(--paper); font-weight:500; }
@@ -114,10 +118,11 @@
   .media::after{ content:""; position:absolute; left:0; right:0; top:0; height:3px; background:var(--spectral); opacity:0; transition:opacity .25s; }
   .plate:hover .media::after{ opacity:0.95; }
 
-  .card-tools{ position:absolute; top:9px; right:9px; display:none; gap:7px; z-index:3; }
-  body.editing .card-tools{ display:flex; }
+  .card-tools{ position:absolute; top:9px; right:9px; display:flex; gap:7px; z-index:3; opacity:0; pointer-events:none; transition:opacity .15s; }
+  .plate:hover .card-tools, body.editing .card-tools, body.show-hidden .card-tools{ opacity:1; pointer-events:auto; }
   .card-tools button{ width:34px; height:34px; border-radius:9px; cursor:pointer; display:grid; place-items:center; background:rgba(12,9,20,0.72); color:#fff; border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(4px); transition:background-color .15s, border-color .15s; }
   .card-tools button svg{ width:16px; height:16px; }
+  .card-tools .hide:hover, .card-tools .unhide:hover{ background:var(--surface-2); border-color:#fff; }
   .card-tools .edit:hover{ background:var(--river); border-color:var(--river); }
   .card-tools .del:hover{ background:#d05a6a; border-color:#d05a6a; }
 
@@ -129,6 +134,7 @@
   .btn{ font-size:13px; letter-spacing:0.02em; color:var(--paper); background:var(--surface-2); border:1px solid var(--line); border-radius:9px; padding:9px 12px; cursor:pointer; transition:border-color .16s, filter .16s; flex:1; }
   .btn:hover{ border-color:var(--line-2); filter:brightness(1.12); }
   .btn.copied{ color:var(--aqua); border-color:rgba(127,216,201,0.55); }
+  .btn.unhide{ color:var(--river); }
 
   .add-tile{ display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; min-height:200px; border:1.5px dashed var(--line-2); border-radius:var(--radius); color:var(--muted); background:none; cursor:pointer; transition:color .16s, border-color .16s; font-size:14px; }
   .add-tile:hover{ color:var(--paper); border-color:var(--river); }
@@ -140,17 +146,19 @@
   .overlay.open{ display:grid; place-items:center; animation:fade .25s ease both; }
   @keyframes fade{ from{opacity:0;} to{opacity:1;} }
 
-  /* centered style card */
   .card-view{ position:relative; width:min(560px,100%); max-height:90vh; display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--line-2); border-radius:18px; overflow:hidden; box-shadow:var(--shadow); }
   .cv-media{ position:relative; background:var(--ink-deep); }
-  .cv-img{ display:grid; place-items:center; max-height:48vh; min-height:220px; overflow:hidden; background-size:cover; background-position:center; }
-  .cv-img img{ width:100%; max-height:48vh; object-fit:contain; display:block; }
+  .cv-img{ display:grid; place-items:center; max-height:52vh; min-height:220px; overflow:hidden; background-size:cover; background-position:center; }
+  .cv-img img{ width:100%; max-height:52vh; object-fit:contain; display:block; }
   .cv-img .glyph{ font-family:"Fraunces",serif; font-size:92px; color:rgba(255,255,255,0.34); }
   .cv-body{ padding:20px clamp(18px,3vw,26px) 22px; display:flex; flex-direction:column; gap:11px; overflow-y:auto; }
   .cv-cat{ align-self:flex-start; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--river); background:var(--surface-2); border:1px solid var(--line); padding:4px 12px; border-radius:999px; }
   .cv-name{ font-family:"Fraunces",serif; font-weight:600; font-size:clamp(23px,4vw,31px); line-height:1.05; margin:0; letter-spacing:-0.01em; }
-  .cv-plabel{ font-size:11px; letter-spacing:0.28em; text-transform:uppercase; color:var(--muted); margin-top:4px; }
-  .prompt{ font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px; line-height:1.65; color:var(--code-fg); background:var(--code-bg); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:15px; white-space:pre-wrap; word-break:break-word; max-height:30vh; overflow:auto; }
+  .cv-toggle{ align-self:flex-start; display:inline-flex; align-items:center; gap:8px; font-size:13px; letter-spacing:0.02em; color:var(--paper); background:var(--surface-2); border:1px solid var(--line); border-radius:9px; padding:9px 14px; cursor:pointer; transition:border-color .16s, filter .16s; }
+  .cv-toggle:hover{ border-color:var(--line-2); filter:brightness(1.12); }
+  .cv-toggle svg{ width:14px; height:14px; transition:transform .18s; }
+  .cv-toggle.open svg{ transform:rotate(180deg); }
+  .prompt{ font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px; line-height:1.65; color:var(--code-fg); background:var(--code-bg); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:15px; white-space:pre-wrap; word-break:break-word; max-height:32vh; overflow:auto; }
   .cv-actions{ margin-top:4px; display:flex; gap:10px; }
 
   .btn-primary{ flex:1; font-size:14px; letter-spacing:0.02em; color:var(--ink-deep); background:var(--paper); border:none; border-radius:10px; padding:12px; cursor:pointer; transition:transform .12s, filter .16s; font-weight:500; }
@@ -202,7 +210,7 @@
   .toast.show{ opacity:1; transform:translate(-50%,0); }
   body.modal-open{ overflow:hidden; }
 
-  @media (max-width:600px){ .cv-img{ max-height:40vh; } .cv-img img{ max-height:40vh; } }
+  @media (max-width:600px){ .cv-img{ max-height:42vh; } .cv-img img{ max-height:42vh; } }
   @media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } .plate:hover{ transform:none; } }
 </style>
 </head>
@@ -236,6 +244,7 @@
         <input id="search" type="search" placeholder="Search styles, prompts, categories…" autocomplete="off" aria-label="Search styles" />
       </label>
       <span class="count" id="count"></span>
+      <button class="hidden-pill" id="hiddenBar" hidden></button>
     </div>
     <div class="catbar" id="catbar"></div>
   </div>
@@ -245,7 +254,7 @@
 <div class="wrap">
   <footer>
     <span>RiverGallery <span class="mark">✦</span> a personal codex of styles</span>
-    <span id="footCredit">same source, different soul</span>
+    <span>same source, different soul</span>
   </footer>
 </div>
 
@@ -262,8 +271,8 @@
     <div class="cv-body">
       <span class="cv-cat" id="cvCat"></span>
       <h2 class="cv-name" id="cvName"></h2>
-      <div class="cv-plabel">Prompt</div>
-      <div class="prompt" id="cvPrompt"></div>
+      <button class="cv-toggle" id="cvToggle" aria-expanded="false"><span id="cvToggleLabel">Show prompt</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="prompt" id="cvPrompt" hidden></div>
       <div class="cv-actions"><button class="btn-primary" id="cvCopy">copy prompt</button></div>
     </div>
   </div>
@@ -326,12 +335,13 @@
         <button class="mini" id="exportBtn" type="button">Export collection (.json)</button>
         <button class="mini" id="importBtn" type="button">Import collection…</button>
         <button class="mini" id="loadFileBtn" type="button">Load styles.json from site</button>
+        <button class="mini" id="loadImagesBtn" type="button">Load preview images</button>
         <button class="mini danger" id="resetBtn" type="button">Reset to samples</button>
       </div>
-      <div class="note" style="margin-top:10px;">Import accepts RiverGallery exports or any list of name / prompt / category (or section) entries. “Load styles.json” reads a file placed next to this page in your repo.</div>
+      <div class="note" style="margin-top:10px;">Import accepts RiverGallery exports or any list of name / prompt / category (or section) entries. “Load preview images” reads images/manifest.json in your repo and matches thumbnails to styles by name.</div>
       <input type="file" id="importFile" accept="application/json,.json" hidden />
     </div>
-    <div class="note" style="border-top:1px solid var(--line); padding-top:14px;">Inspired by the Clio Style Preview gallery. The community style set it can import was compiled by u/Dear-Spend-2865 and shared via lumenastrum/clio-style-preview (MIT) — please keep the credit.</div>
+    <div class="note" style="border-top:1px solid var(--line); padding-top:14px;">Inspired by the Clio Style Preview gallery. The community style set + preview images it can load were compiled by u/Dear-Spend-2865 and shared via lumenastrum/clio-style-preview (MIT) — please keep the credit.</div>
     <div class="modal-actions"><button class="btn-primary" id="setDone" type="button">Done</button></div>
   </div>
 </div>
@@ -364,8 +374,10 @@
     get(k){ try { return localStorage.getItem(k); } catch(e){ return (k in mem) ? mem[k] : null; } },
     set(k,v){ try { localStorage.setItem(k,v); } catch(e){ mem[k]=v; } }
   };
-  const KEY_STYLES = "rivergallery.v2.styles";
+  const KEY_STYLES = "rivergallery.v3.styles";
   const KEY_THEME  = "rivergallery.v1.theme";
+  // Preview images: upload the Clio "krea2" folder + manifest.json into /images.
+  const MANIFEST_URL = "images/manifest.json";
 
   const DEFAULTS = (typeof STYLES !== "undefined" && Array.isArray(STYLES)) ? STYLES : [];
   const G = (typeof GALLERY !== "undefined" && GALLERY) ? GALLERY : {};
@@ -377,50 +389,47 @@
 
   let uid = 1;
   const newId = () => "s"+(uid++)+"_"+Math.random().toString(36).slice(2,7);
-  function pickCategory(s){
-    if (!s) return "Uncategorized";
-    const c = s.category || s.section || s.tradition || s.group || (Array.isArray(s.tags) && s.tags[0]);
-    return c ? String(c) : "Uncategorized";
-  }
-  function pickPrompt(s){
-    const p = s && (s.prompt || s.prose || s.text || s.description);
-    return p ? String(p) : "";
-  }
-  function normalize(arr){
+  function pickCategory(s){ if(!s) return "Uncategorized"; const c=s.category||s.section||s.tradition||s.group||(Array.isArray(s.tags)&&s.tags[0]); return c?String(c):"Uncategorized"; }
+  function pickPrompt(s){ const p=s&&(s.prompt||s.prose||s.text||s.description); return p?String(p):""; }
+  function normalize(arr, defBuiltin){
     return (arr||[]).filter(Boolean).map(s => ({
       _id:newId(),
       name:(s && s.name) ? String(s.name) : "Untitled style",
       prompt:pickPrompt(s),
       category:pickCategory(s),
-      image:(s && s.image) ? String(s.image) : ""
+      image:(s && s.image) ? String(s.image) : "",
+      builtin:(typeof s.builtin==="boolean") ? s.builtin : !!defBuiltin,
+      hidden:!!(s && s.hidden)
     }));
   }
-  const clean = (s) => ({ name:s.name, prompt:s.prompt, category:s.category, image:s.image });
+  const cleanStore = (s) => ({ name:s.name, prompt:s.prompt, category:s.category, image:s.image, builtin:s.builtin, hidden:s.hidden });
+  const cleanExport = (s) => ({ name:s.name, prompt:s.prompt, category:s.category, image:s.image });
   function asArray(j){ return Array.isArray(j) ? j : (j && Array.isArray(j.styles) ? j.styles : null); }
-  function persist(){ store.set(KEY_STYLES, JSON.stringify(styles.map(clean))); }
-
+  function persist(){ store.set(KEY_STYLES, JSON.stringify(styles.map(cleanStore))); }
   let styles = [];
 
   function hash(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
   function swatch(name){ const h=hash(name||"?"); const a=h%360, b=(a+34+(h>>4)%70)%360, ang=(h>>6)%180; return "linear-gradient("+ang+"deg, hsl("+a+" 52% 60%), hsl("+b+" 46% 38%))"; }
   const initial = (name) => ((name||"").trim()[0] || "✦").toUpperCase();
 
-  const themeSeg = $("themeSeg");
+  const rootEl=document.documentElement, themeSeg=$("themeSeg");
   function applyTheme(t){
-    const light = (t==="light");
-    document.documentElement.setAttribute("data-theme", light?"light":"dark");
+    const light=(t==="light");
+    rootEl.classList.add("no-anim");
+    rootEl.setAttribute("data-theme", light?"light":"dark");
     store.set(KEY_THEME, light?"light":"dark");
     themeSeg.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeVal===(light?"light":"dark") ? "true":"false"));
+    requestAnimationFrame(()=>requestAnimationFrame(()=>rootEl.classList.remove("no-anim")));
   }
   applyTheme(store.get(KEY_THEME)==="light" ? "light" : "dark");
-  $("themeBtn").addEventListener("click", () => applyTheme(document.documentElement.getAttribute("data-theme")==="light" ? "dark" : "light"));
+  $("themeBtn").addEventListener("click", () => applyTheme(rootEl.getAttribute("data-theme")==="light" ? "dark" : "light"));
   themeSeg.querySelectorAll("button").forEach(b => b.addEventListener("click", () => applyTheme(b.dataset.themeVal)));
 
-  const state = { search:"", category:null, visible:[] };
-  const grid=$("grid"), countEl=$("count"), catbar=$("catbar"), searchEl=$("search");
+  const state = { search:"", category:null, showHidden:false, visible:[] };
+  const grid=$("grid"), countEl=$("count"), catbar=$("catbar"), searchEl=$("search"), hiddenBar=$("hiddenBar");
 
   function computeCategories(){
-    const m={}; styles.forEach(s=>{ const c=s.category||"Uncategorized"; m[c]=(m[c]||0)+1; });
+    const m={}; styles.forEach(s=>{ if(s.hidden) return; const c=s.category||"Uncategorized"; m[c]=(m[c]||0)+1; });
     return Object.keys(m).map(k=>({name:k,count:m[k]})).sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name));
   }
   function renderCats(){
@@ -432,8 +441,7 @@
     all.addEventListener("click", ()=>{ state.category=null; renderCats(); render(); });
     catbar.appendChild(all);
     cats.forEach(c=>{
-      const b=document.createElement("button"); b.className="chip";
-      b.innerHTML = c.name + '<span class="n">'+c.count+'</span>';
+      const b=document.createElement("button"); b.className="chip"; b.innerHTML = c.name + '<span class="n">'+c.count+'</span>';
       b.setAttribute("aria-pressed", state.category===c.name?"true":"false");
       b.addEventListener("click", ()=>{ state.category = (state.category===c.name?null:c.name); renderCats(); render(); });
       catbar.appendChild(b);
@@ -445,35 +453,82 @@
     }
   }
 
-  function matches(s){
-    if (state.category!==null && s.category!==state.category) return false;
-    if (state.search){ const q=state.search.toLowerCase(); if(!((s.name+" "+s.prompt+" "+(s.category||"")).toLowerCase().includes(q))) return false; }
-    return true;
+  function searchMatch(s){ if(!state.search) return true; const q=state.search.toLowerCase(); return (s.name+" "+s.prompt+" "+(s.category||"")).toLowerCase().includes(q); }
+  function currentList(){
+    if (state.showHidden) return styles.filter(s=>s.hidden && searchMatch(s));
+    return styles.filter(s=>!s.hidden && (state.category===null||s.category===state.category) && searchMatch(s));
   }
+
+  // ---- preview images resolved from images/manifest.json (style name -> file) ----
+  let imageMap = {};
+  const normName = (n) => (n||"").trim().toLowerCase();
+  async function loadManifest(){
+    try{
+      const res=await fetch(MANIFEST_URL, {cache:"no-store"});
+      if(!res.ok) return false;
+      const m=await res.json();
+      const map={};
+      const secs=(m && m.sections) ? m.sections : (Array.isArray(m) ? {list:{images:m}} : {});
+      Object.keys(secs).forEach(k=>{
+        const arr=(secs[k] && secs[k].images) ? secs[k].images : [];
+        arr.forEach(it=>{
+          const nm=it && (it.style||it.name||it.title);
+          const f=it && (it.thumb||it.file||it.image);
+          if(nm && f){ try{ const u=new URL(f, res.url).href; map[nm]=u; map[normName(nm)]=u; }catch(e){} }
+        });
+      });
+      imageMap=map; return true;
+    }catch(e){ return false; }
+  }
+  function imageFor(s){ return s.image || imageMap[s.name] || imageMap[normName(s.name)] || ""; }
 
   function fillMedia(el, s, big){
     el.innerHTML = "";
-    el.style.background = s.image ? (big ? "var(--ink-deep)" : "") : swatch(s.name);
+    const src = imageFor(s);
+    el.style.background = src ? (big ? "var(--ink-deep)" : "") : swatch(s.name);
     const gl=document.createElement("span"); gl.className="glyph"; gl.textContent=initial(s.name); el.appendChild(gl);
-    if (s.image){
-      const img=document.createElement("img"); img.loading="lazy"; img.alt=s.name; img.src=s.image;
+    if (src){
+      const img=document.createElement("img"); img.loading="lazy"; img.alt=s.name; img.src=src;
       img.addEventListener("error", () => { img.remove(); el.style.background=swatch(s.name); });
       el.appendChild(img);
     }
   }
 
-  function render(){
-    state.visible = styles.filter(matches);
-    grid.innerHTML="";
-    countEl.innerHTML = "<b>"+state.visible.length+"</b> of "+styles.length+" styles";
+  const ICON = {
+    hide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a18 18 0 0 1-2.16 3.19M6.6 6.6A18 18 0 0 0 2 12s3 8 10 8a9 9 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 1 0 4.2 4.2"/><path d="M1 1l22 22"/></svg>',
+    unhide:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8Z"/><circle cx="12" cy="12" r="3"/></svg>',
+    edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+    del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>'
+  };
 
-    if (!state.visible.length && !document.body.classList.contains("editing")){
-      grid.innerHTML = '<div class="empty"><div class="big">Nothing here yet.</div><div>Try a different word, clear the filters, or add a style.</div></div>';
+  function updateHiddenBar(){
+    const n = styles.filter(s=>s.hidden).length;
+    if (n===0){ hiddenBar.hidden=true; if(state.showHidden){ state.showHidden=false; document.body.classList.remove("show-hidden"); } return; }
+    hiddenBar.hidden=false;
+    hiddenBar.setAttribute("aria-pressed", state.showHidden?"true":"false");
+    hiddenBar.innerHTML = state.showHidden
+      ? ICON.unhide + "back to gallery ("+n+" hidden)"
+      : ICON.hide + n + " hidden";
+  }
+
+  function render(){
+    updateHiddenBar();
+    const list = currentList();
+    state.visible = list;
+    grid.innerHTML="";
+    countEl.innerHTML = state.showHidden
+      ? "<b>"+list.length+"</b> hidden"
+      : "<b>"+list.length+"</b> of "+styles.filter(s=>!s.hidden).length+" styles";
+
+    if (!list.length && !(document.body.classList.contains("editing") && !state.showHidden)){
+      grid.innerHTML = state.showHidden
+        ? '<div class="empty"><div class="big">No hidden styles match.</div><div>Clear the search to see all hidden styles.</div></div>'
+        : '<div class="empty"><div class="big">Nothing here yet.</div><div>Try a different word, clear the filters, or add a style.</div></div>';
       return;
     }
 
-    state.visible.forEach((s,idx) => {
-      const card=document.createElement("article"); card.className="plate"; card.style.animationDelay=Math.min(idx*22,260)+"ms";
+    list.forEach((s,idx) => {
+      const card=document.createElement("article"); card.className="plate"; card.style.animationDelay=Math.min(idx*20,240)+"ms";
 
       const media=document.createElement("div");
       media.className="media"; media.setAttribute("role","button"); media.tabIndex=0; media.setAttribute("aria-label","Open "+s.name);
@@ -484,30 +539,46 @@
       card.appendChild(media);
 
       const tools=document.createElement("div"); tools.className="card-tools";
-      const ed=document.createElement("button"); ed.className="edit"; ed.title="Edit style"; ed.setAttribute("aria-label","Edit "+s.name);
-      ed.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
-      ed.addEventListener("click", e=>{ e.stopPropagation(); openEditor(s._id); });
-      const del=document.createElement("button"); del.className="del"; del.title="Delete style"; del.setAttribute("aria-label","Delete "+s.name);
-      del.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>';
-      del.addEventListener("click", e=>{ e.stopPropagation(); removeStyle(s._id); });
-      tools.appendChild(ed); tools.appendChild(del); card.appendChild(tools);
+      if (state.showHidden){
+        const un=document.createElement("button"); un.className="unhide"; un.title="Unhide"; un.setAttribute("aria-label","Unhide "+s.name); un.innerHTML=ICON.unhide;
+        un.addEventListener("click", e=>{ e.stopPropagation(); setHidden(s._id,false); });
+        tools.appendChild(un);
+      } else {
+        const hd=document.createElement("button"); hd.className="hide"; hd.title="Hide"; hd.setAttribute("aria-label","Hide "+s.name); hd.innerHTML=ICON.hide;
+        hd.addEventListener("click", e=>{ e.stopPropagation(); setHidden(s._id,true); });
+        tools.appendChild(hd);
+        if (document.body.classList.contains("editing") && !s.builtin){
+          const ed=document.createElement("button"); ed.className="edit"; ed.title="Edit style"; ed.setAttribute("aria-label","Edit "+s.name); ed.innerHTML=ICON.edit;
+          ed.addEventListener("click", e=>{ e.stopPropagation(); openEditor(s._id); });
+          const del=document.createElement("button"); del.className="del"; del.title="Delete style"; del.setAttribute("aria-label","Delete "+s.name); del.innerHTML=ICON.del;
+          del.addEventListener("click", e=>{ e.stopPropagation(); removeStyle(s._id); });
+          tools.appendChild(ed); tools.appendChild(del);
+        }
+      }
+      card.appendChild(tools);
 
       const body=document.createElement("div"); body.className="body";
       if (s.category){
         const cat=document.createElement("button"); cat.className="cat"; cat.textContent=s.category;
-        cat.addEventListener("click", ()=>{ state.category=s.category; renderCats(); render(); window.scrollTo({top:0,behavior:"smooth"}); });
+        cat.addEventListener("click", ()=>{ if(state.showHidden){ state.showHidden=false; document.body.classList.remove("show-hidden"); } state.category=s.category; renderCats(); render(); window.scrollTo({top:0,behavior:"smooth"}); });
         body.appendChild(cat);
       }
       const name=document.createElement("h3"); name.className="name"; name.textContent=s.name; body.appendChild(name);
       const row=document.createElement("div"); row.className="row";
       const copy=document.createElement("button"); copy.className="btn"; copy.textContent="copy prompt";
       copy.addEventListener("click", e=>{ e.stopPropagation(); copyText(s.prompt, copy); });
-      row.appendChild(copy); body.appendChild(row);
+      row.appendChild(copy);
+      if (state.showHidden){
+        const un=document.createElement("button"); un.className="btn unhide"; un.textContent="unhide";
+        un.addEventListener("click", e=>{ e.stopPropagation(); setHidden(s._id,false); });
+        row.appendChild(un);
+      }
+      body.appendChild(row);
       card.appendChild(body);
       grid.appendChild(card);
     });
 
-    if (document.body.classList.contains("editing")){
+    if (document.body.classList.contains("editing") && !state.showHidden){
       const add=document.createElement("button"); add.className="add-tile";
       add.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span>Add a style</span>';
       add.addEventListener("click", ()=>openEditor(null));
@@ -515,26 +586,34 @@
     }
   }
 
+  function setHidden(id, val){
+    const s=styles.find(x=>x._id===id); if(!s) return;
+    s.hidden=val; persist(); renderCats(); render();
+    toast(val ? "Style hidden" : "Style unhidden");
+  }
   function removeStyle(id){
-    const s = styles.find(x=>x._id===id); if(!s) return;
+    const s = styles.find(x=>x._id===id); if(!s || s.builtin) return;
     if (!confirm('Delete "'+s.name+'"? This can\'t be undone.')) return;
     styles = styles.filter(x=>x._id!==id);
     persist(); renderCats(); render(); toast("Style removed");
   }
 
   const toastEl=$("toast"); let toastTimer;
-  function toast(msg){ toastEl.textContent=msg; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"),1600); }
+  function toast(msg){ toastEl.textContent=msg; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"),1700); }
   function copyText(text, btn){
     const done=()=>{ toast("prompt copied"); if(btn){ const old=btn.textContent; btn.textContent="copied ✓"; btn.classList.add("copied"); setTimeout(()=>{ btn.textContent=old; btn.classList.remove("copied"); },1300);} };
-    if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(()=>fb(text,done)); } else fb(text,done);
+    if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(()=>fbcopy(text,done)); } else fbcopy(text,done);
   }
-  function fb(text, done){ const ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); done(); }catch(e){ toast("copy failed"); } document.body.removeChild(ta); }
+  function fbcopy(text, done){ const ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); done(); }catch(e){ toast("copy failed"); } document.body.removeChild(ta); }
 
   let lastFocus=null;
   function openOverlay(el){ el.classList.add("open"); document.body.classList.add("modal-open"); lastFocus=document.activeElement; }
   function closeOverlay(el){ el.classList.remove("open"); if(!document.querySelector(".overlay.open")) document.body.classList.remove("modal-open"); if(lastFocus&&lastFocus.focus)lastFocus.focus(); }
 
-  const viewer=$("viewer"), cvImg=$("cvImg"), cvCat=$("cvCat"), cvName=$("cvName"), cvPrompt=$("cvPrompt"), cvCopy=$("cvCopy"), cvCounter=$("cvCounter");
+  const viewer=$("viewer"), cvImg=$("cvImg"), cvCat=$("cvCat"), cvName=$("cvName"), cvPrompt=$("cvPrompt"), cvCopy=$("cvCopy"), cvCounter=$("cvCounter"), cvToggle=$("cvToggle"), cvToggleLabel=$("cvToggleLabel");
+  let promptOpen=false;
+  function setPromptOpen(open){ promptOpen=open; cvPrompt.hidden=!open; cvToggle.setAttribute("aria-expanded", open?"true":"false"); cvToggle.classList.toggle("open", open); cvToggleLabel.textContent=open?"Hide prompt":"Show prompt"; if(open) cvPrompt.scrollTop=0; }
+  cvToggle.addEventListener("click", ()=>setPromptOpen(!promptOpen));
   function openViewer(id){ const pos=state.visible.findIndex(s=>s._id===id); if(pos<0) return; fillViewer(pos); openOverlay(viewer); $("cvClose").focus(); }
   function fillViewer(pos){
     const s=state.visible[pos]; viewer.dataset.pos=pos;
@@ -542,7 +621,7 @@
     if (s.category){ cvCat.textContent=s.category; cvCat.style.display=""; } else cvCat.style.display="none";
     cvName.textContent=s.name; cvPrompt.textContent=s.prompt||"(no prompt yet)";
     cvCounter.textContent=(pos+1)+" / "+state.visible.length;
-    cvPrompt.scrollTop=0;
+    setPromptOpen(false);
     cvCopy.textContent="copy prompt"; cvCopy.classList.remove("copied");
     cvCopy.onclick=()=>copyText(s.prompt, cvCopy);
   }
@@ -563,6 +642,7 @@
   function openEditor(id){
     editorTarget=id;
     const s = id ? styles.find(x=>x._id===id) : null;
+    if (s && s.builtin){ toast("Default styles can't be edited"); return; }
     edName.value = s ? s.name : "";
     edCategory.value = s ? (s.category||"") : "";
     edPrompt.value = s ? s.prompt : "";
@@ -590,8 +670,8 @@
     const name=edName.value.trim();
     if(!name){ toast("Give your style a name"); edName.focus(); return; }
     const rec={ name, prompt:edPrompt.value, category:(edCategory.value.trim()||"Uncategorized"), image:editImage };
-    if (editorTarget){ const s=styles.find(x=>x._id===editorTarget); if(s) Object.assign(s, rec); }
-    else { styles.push(Object.assign({_id:newId()}, rec)); }
+    if (editorTarget){ const s=styles.find(x=>x._id===editorTarget); if(s && !s.builtin) Object.assign(s, rec); }
+    else { styles.push(Object.assign({_id:newId(), builtin:false, hidden:false}, rec)); }
     persist(); closeOverlay(editor); renderCats(); render(); toast("Style saved");
   }
   $("edSave").addEventListener("click", saveEditor);
@@ -611,12 +691,12 @@
     const a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
     document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
-  $("exportBtn").addEventListener("click", ()=>{ download("rivergallery-styles.json", JSON.stringify(styles.map(clean), null, 2)); toast("Collection exported"); });
+  $("exportBtn").addEventListener("click", ()=>{ download("rivergallery-styles.json", JSON.stringify(styles.map(cleanExport), null, 2)); toast("Collection exported"); });
   $("importBtn").addEventListener("click", ()=>$("importFile").click());
   $("importFile").addEventListener("change", ()=>{
     const f=$("importFile").files && $("importFile").files[0]; if(!f) return;
     const r=new FileReader();
-    r.onload=()=>{ try{ const arr=asArray(JSON.parse(r.result)); if(!arr) throw 0; styles=normalize(arr); persist(); renderCats(); render(); toast("Imported "+styles.length+" styles"); closeOverlay(settings); }catch(e){ toast("That file isn't a valid style list"); } };
+    r.onload=()=>{ try{ const arr=asArray(JSON.parse(r.result)); if(!arr) throw 0; styles=normalize(arr, true); persist(); renderCats(); render(); toast("Imported "+styles.length+" styles"); closeOverlay(settings); }catch(e){ toast("That file isn't a valid style list"); } };
     r.onerror=()=>toast("Could not read that file");
     r.readAsText(f); $("importFile").value="";
   });
@@ -625,12 +705,24 @@
       const res=await fetch("styles.json", {cache:"no-store"});
       if(!res.ok) throw 0;
       const arr=asArray(await res.json()); if(!arr) throw 0;
-      styles=normalize(arr); persist(); renderCats(); render();
+      styles=normalize(arr, true); persist(); renderCats(); render();
       toast("Loaded "+styles.length+" styles from styles.json"); closeOverlay(settings);
     }catch(e){ toast("No valid styles.json found next to this page"); }
   }
   $("loadFileBtn").addEventListener("click", loadFromSite);
-  $("resetBtn").addEventListener("click", ()=>{ if(confirm("Reset to the sample styles? Your current collection in this browser will be replaced.")){ styles=normalize(DEFAULTS); persist(); renderCats(); render(); toast("Reset to samples"); } });
+  $("resetBtn").addEventListener("click", ()=>{ if(confirm("Reset to the sample styles? Your current collection in this browser will be replaced.")){ styles=normalize(DEFAULTS, true); persist(); renderCats(); render(); toast("Reset to samples"); } });
+
+  // ---- (re)load preview images from images/manifest.json in your repo ----
+  async function reloadImages(){
+    toast("Loading preview images…");
+    const ok=await loadManifest();
+    if(!ok){ toast("No images/manifest.json found in your repo yet"); return; }
+    let n=0; styles.forEach(s=>{ if(imageFor(s)) n++; });
+    render();
+    toast(n ? ("Preview images loaded ("+n+")") : "Manifest loaded, but no names matched");
+    closeOverlay(settings);
+  }
+  $("loadImagesBtn").addEventListener("click", reloadImages);
 
   const editBtn=$("editBtn");
   editBtn.addEventListener("click", ()=>{
@@ -640,6 +732,7 @@
     render();
   });
   $("newBtn").addEventListener("click", ()=>openEditor(null));
+  hiddenBar.addEventListener("click", ()=>{ state.showHidden=!state.showHidden; document.body.classList.toggle("show-hidden", state.showHidden); render(); window.scrollTo({top:0,behavior:"smooth"}); });
 
   let sTimer;
   searchEl.addEventListener("input", e=>{ clearTimeout(sTimer); const v=e.target.value; sTimer=setTimeout(()=>{ state.search=v.trim(); renderCats(); render(); },120); });
@@ -648,15 +741,17 @@
     if (e.key==="Escape"){ if(editor.classList.contains("open"))closeOverlay(editor); else if(settings.classList.contains("open"))closeOverlay(settings); }
   });
 
-  // ---- initial load: localStorage → styles.json (fresh browser) → seed ----
   async function init(){
     const raw = store.get(KEY_STYLES);
-    if (raw){ try{ const p=JSON.parse(raw); if(Array.isArray(p)){ styles=normalize(p); renderCats(); render(); return; } }catch(e){} }
-    try{
-      const res=await fetch("styles.json", {cache:"no-store"});
-      if(res.ok){ const arr=asArray(await res.json()); if(arr){ styles=normalize(arr); persist(); renderCats(); render(); return; } }
-    }catch(e){}
-    styles=normalize(DEFAULTS); renderCats(); render();
+    let loaded=false;
+    if (raw){ try{ const p=JSON.parse(raw); if(Array.isArray(p)){ styles=normalize(p); loaded=true; } }catch(e){} }
+    if (!loaded){
+      try{ const res=await fetch("styles.json", {cache:"no-store"}); if(res.ok){ const arr=asArray(await res.json()); if(arr){ styles=normalize(arr, true); persist(); loaded=true; } } }catch(e){}
+    }
+    if (!loaded) styles=normalize(DEFAULTS, true);
+    renderCats(); render();
+    // thumbnails load in the background, then re-render so they appear
+    loadManifest().then(ok=>{ if(ok) render(); });
   }
   init();
 })();
