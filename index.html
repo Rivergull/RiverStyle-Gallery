@@ -11,66 +11,46 @@
 <!--
   ════════════════════════════════════════════════════════════════════════
     ✦  RiverGallery  ✦
-    You can now add, edit and delete styles right in the page — no need to
-    hand-edit this file. Use the toolbar: "+ New style", "Edit", the theme
-    toggle, and the gear (Settings → Export / Import / Reset).
+    Add / edit / delete styles right in the page (toolbar: "+ New style",
+    "Edit", theme toggle, and the gear for Settings). Changes save in this
+    browser automatically.
 
-    Your changes are saved in this browser automatically. To make them part
-    of the hosted site (so every visitor / device sees them), open Settings
-    and use "Export collection", then either keep the .json as a backup or
-    paste it into the STYLES list near the bottom of this file and re-commit.
+    IMPORT A WHOLE LIBRARY:
+    Settings → "Import collection" accepts either RiverGallery's own export
+    OR a list of { "name", "prompt", "section"/"category" } entries — e.g.
+    the community Clio style set (styles.json) it was inspired by.
 
-    The STYLES / GALLERY block below is only the STARTING SEED — it's used
-    the first time the page opens in a fresh browser.
+    PERMANENT LIBRARY (all devices): put a styles.json next to this file in
+    your repo. On a fresh browser the gallery loads it automatically; on a
+    browser that already has data, use Settings → "Load styles.json".
   ════════════════════════════════════════════════════════════════════════
 -->
 
 <style>
   :root{
-    --ink:      #100D18;
-    --ink-deep: #09060F;
-    --surface:  #181320;
-    --surface-2:#221B2F;
-    --paper:    #ECE5D8;
-    --paper-dim:#BDB4C6;
-    --muted:    #8B8296;
-    --line:     rgba(236,229,216,0.10);
-    --line-2:   rgba(236,229,216,0.20);
-    --focus:    rgba(111,180,232,0.32);
-    --aqua:  #7FD8C9;
-    --river: #6FB4E8;
-    --indigo:#9C9BF0;
-    --spectral: linear-gradient(90deg, var(--aqua), var(--river), var(--indigo));
-    --radius: 14px;
-    --shadow: 0 24px 60px -30px rgba(0,0,0,0.75);
+    --ink:#100D18; --ink-deep:#09060F; --surface:#181320; --surface-2:#221B2F;
+    --paper:#ECE5D8; --paper-dim:#BDB4C6; --muted:#8B8296;
+    --line:rgba(236,229,216,0.10); --line-2:rgba(236,229,216,0.20); --focus:rgba(111,180,232,0.32);
+    --aqua:#7FD8C9; --river:#6FB4E8; --indigo:#9C9BF0;
+    --spectral:linear-gradient(90deg, var(--aqua), var(--river), var(--indigo));
+    --radius:14px; --shadow:0 24px 60px -30px rgba(0,0,0,0.75);
     --code-bg:#0E0B16; --code-fg:#CFC8DA;
   }
   [data-theme="light"]{
-    --ink:      #F1F3F2;
-    --ink-deep: #0E0B16;
-    --surface:  #FFFFFF;
-    --surface-2:#EAEEEC;
-    --paper:    #191521;
-    --paper-dim:#4E4956;
-    --muted:    #7A7484;
-    --line:     rgba(20,16,30,0.10);
-    --line-2:   rgba(20,16,30,0.20);
-    --focus:    rgba(58,140,205,0.30);
-    --shadow: 0 24px 55px -34px rgba(30,40,60,0.45);
+    --ink:#F1F3F2; --ink-deep:#0E0B16; --surface:#FFFFFF; --surface-2:#EAEEEC;
+    --paper:#191521; --paper-dim:#4E4956; --muted:#7A7484;
+    --line:rgba(20,16,30,0.10); --line-2:rgba(20,16,30,0.20); --focus:rgba(58,140,205,0.30);
+    --shadow:0 24px 55px -34px rgba(30,40,60,0.45);
   }
-
   *{ box-sizing:border-box; }
   html{ -webkit-text-size-adjust:100%; }
   body{
-    margin:0; min-height:100vh;
-    font-family:"Space Grotesk", system-ui, sans-serif;
-    color:var(--paper);
+    margin:0; min-height:100vh; font-family:"Space Grotesk", system-ui, sans-serif; color:var(--paper);
     background:
       radial-gradient(120% 80% at 50% -10%, rgba(111,180,232,0.12), transparent 60%),
       radial-gradient(90% 60% at 100% 0%, rgba(127,216,201,0.07), transparent 55%),
       var(--ink);
-    line-height:1.5; letter-spacing:0.01em;
-    transition:background-color .3s, color .3s;
+    line-height:1.5; letter-spacing:0.01em; transition:background-color .3s, color .3s;
   }
   [data-theme="light"] body{
     background:
@@ -82,23 +62,12 @@
   button{ font-family:inherit; }
   .wrap{ max-width:1240px; margin:0 auto; padding:0 clamp(18px,4vw,44px); }
 
-  /* ── Masthead ─────────────────────────────────────── */
   header{ padding:clamp(30px,6vw,72px) 0 24px; }
   .masthead-top{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
-  .eyebrow{
-    font-size:12px; letter-spacing:0.42em; text-transform:uppercase;
-    color:var(--muted); display:flex; align-items:center; gap:12px;
-  }
+  .eyebrow{ font-size:12px; letter-spacing:0.42em; text-transform:uppercase; color:var(--muted); display:flex; align-items:center; gap:12px; }
   .eyebrow .mark{ color:var(--river); font-size:14px; }
-
   .toolbar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-  .tbtn{
-    display:inline-flex; align-items:center; gap:7px;
-    font-size:13px; letter-spacing:0.02em; color:var(--paper);
-    background:var(--surface); border:1px solid var(--line);
-    border-radius:10px; padding:8px 11px; cursor:pointer;
-    transition:border-color .16s, background-color .16s, transform .1s;
-  }
+  .tbtn{ display:inline-flex; align-items:center; gap:7px; font-size:13px; letter-spacing:0.02em; color:var(--paper); background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:8px 11px; cursor:pointer; transition:border-color .16s, background-color .16s, transform .1s; }
   .tbtn:hover{ border-color:var(--line-2); }
   .tbtn:active{ transform:translateY(1px); }
   .tbtn svg{ width:16px; height:16px; }
@@ -111,60 +80,33 @@
   [data-theme="light"] .tbtn .moon{ display:inline; }
   [data-theme="light"] .tbtn .sun{ display:none; }
 
-  h1{
-    font-family:"Fraunces", Georgia, serif; font-optical-sizing:auto;
-    font-weight:600; font-size:clamp(42px,8.5vw,98px);
-    line-height:0.95; letter-spacing:-0.02em; margin:20px 0 0;
-  }
-  h1 em{ font-style:italic; font-weight:400; color:var(--paper-dim); }
+  h1{ font-family:"Fraunces", Georgia, serif; font-optical-sizing:auto; font-weight:600; font-size:clamp(42px,8.5vw,98px); line-height:0.95; letter-spacing:-0.02em; margin:20px 0 0; }
   .spectral-rule{ height:2px; width:min(340px,60%); margin:24px 0 18px; background:var(--spectral); border-radius:2px; opacity:0.92; }
   .tagline{ font-size:clamp(15px,2.2vw,19px); color:var(--paper-dim); max-width:52ch; margin:0; }
 
-  /* ── Controls ─────────────────────────────────────── */
-  .controls{
-    position:sticky; top:0; z-index:20; margin-top:30px; padding:14px 0;
-    background:linear-gradient(180deg, var(--ink) 60%, rgba(0,0,0,0));
-    backdrop-filter:blur(7px);
-  }
+  .controls{ position:sticky; top:0; z-index:20; margin-top:30px; padding:14px 0; background:linear-gradient(180deg, var(--ink) 60%, rgba(0,0,0,0)); backdrop-filter:blur(7px); }
   .searchrow{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-  .search{
-    flex:1 1 260px; display:flex; align-items:center; gap:10px;
-    background:var(--surface); border:1px solid var(--line);
-    border-radius:999px; padding:11px 18px; transition:border-color .2s, box-shadow .2s;
-  }
+  .search{ flex:1 1 260px; display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:11px 18px; transition:border-color .2s, box-shadow .2s; }
   .search:focus-within{ border-color:var(--line-2); box-shadow:0 0 0 3px var(--focus); }
   .search svg{ flex:none; opacity:0.5; }
   .search input{ flex:1; background:none; border:none; outline:none; color:var(--paper); font:inherit; font-size:15px; }
   .search input::placeholder{ color:var(--muted); }
   .count{ font-size:13px; color:var(--muted); white-space:nowrap; font-variant-numeric:tabular-nums; }
   .count b{ color:var(--paper); font-weight:500; }
-  .tagbar{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; align-items:center; }
-  .chip{
-    font-size:12.5px; letter-spacing:0.03em; color:var(--paper-dim);
-    background:var(--surface); border:1px solid var(--line);
-    padding:6px 13px; border-radius:999px; cursor:pointer; transition:all .16s; white-space:nowrap;
-  }
+  .catbar{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; align-items:center; }
+  .chip{ font-size:12.5px; letter-spacing:0.03em; color:var(--paper-dim); background:var(--surface); border:1px solid var(--line); padding:6px 13px; border-radius:999px; cursor:pointer; transition:all .16s; white-space:nowrap; }
   .chip:hover{ border-color:var(--line-2); color:var(--paper); }
   .chip[aria-pressed="true"]{ color:var(--ink-deep); background:var(--paper); border-color:var(--paper); font-weight:500; }
   [data-theme="light"] .chip[aria-pressed="true"]{ background:#191521; color:#F1F3F2; border-color:#191521; }
+  .chip .n{ opacity:0.5; margin-left:5px; font-variant-numeric:tabular-nums; }
   .chip.clear{ color:var(--muted); background:none; border-color:transparent; }
   .chip.clear:hover{ color:var(--paper); }
 
-  /* ── Grid ─────────────────────────────────────────── */
   .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(258px,1fr)); gap:clamp(16px,2.4vw,26px); padding:28px 0 80px; }
-  .plate{
-    position:relative; display:flex; flex-direction:column;
-    background:var(--surface); border:1px solid var(--line);
-    border-radius:var(--radius); overflow:hidden;
-    animation:rise .5s cubic-bezier(.2,.7,.2,1) both; transition:border-color .22s, transform .22s;
-  }
+  .plate{ position:relative; display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; animation:rise .5s cubic-bezier(.2,.7,.2,1) both; transition:border-color .22s, transform .22s; }
   .plate:hover{ border-color:var(--line-2); transform:translateY(-3px); }
   @keyframes rise{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:none;} }
-
-  .media{
-    position:relative; display:block; width:100%; aspect-ratio:4/5;
-    cursor:zoom-in; background-size:cover; background-position:center; overflow:hidden; outline:none;
-  }
+  .media{ position:relative; display:block; width:100%; aspect-ratio:4/5; cursor:pointer; background-size:cover; background-position:center; overflow:hidden; outline:none; }
   .media:focus-visible{ box-shadow:inset 0 0 0 3px var(--focus); }
   .media img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; transition:transform .5s cubic-bezier(.2,.7,.2,1); }
   .plate:hover .media img{ transform:scale(1.045); }
@@ -174,74 +116,63 @@
 
   .card-tools{ position:absolute; top:9px; right:9px; display:none; gap:7px; z-index:3; }
   body.editing .card-tools{ display:flex; }
-  .card-tools button{
-    width:34px; height:34px; border-radius:9px; cursor:pointer; display:grid; place-items:center;
-    background:rgba(12,9,20,0.72); color:#fff; border:1px solid rgba(255,255,255,0.18);
-    backdrop-filter:blur(4px); transition:background-color .15s, border-color .15s;
-  }
+  .card-tools button{ width:34px; height:34px; border-radius:9px; cursor:pointer; display:grid; place-items:center; background:rgba(12,9,20,0.72); color:#fff; border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(4px); transition:background-color .15s, border-color .15s; }
   .card-tools button svg{ width:16px; height:16px; }
   .card-tools .edit:hover{ background:var(--river); border-color:var(--river); }
   .card-tools .del:hover{ background:#d05a6a; border-color:#d05a6a; }
 
-  .body{ padding:15px 16px 16px; display:flex; flex-direction:column; gap:12px; flex:1; }
+  .body{ padding:15px 16px 16px; display:flex; flex-direction:column; gap:10px; flex:1; }
   .name{ font-family:"Fraunces",serif; font-weight:600; font-size:19px; line-height:1.15; letter-spacing:-0.01em; margin:0; }
-  .tags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:-2px; }
-  .tag{ font-size:11px; letter-spacing:0.04em; color:var(--muted); background:var(--surface-2); border:1px solid var(--line); padding:3px 9px; border-radius:6px; cursor:pointer; transition:color .15s, border-color .15s; }
-  .tag:hover{ color:var(--paper); border-color:var(--line-2); }
-  .row{ margin-top:auto; display:flex; gap:8px; }
+  .cat{ align-self:flex-start; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--river); background:var(--surface-2); border:1px solid var(--line); padding:3px 10px; border-radius:999px; cursor:pointer; transition:color .15s, border-color .15s; }
+  .cat:hover{ color:var(--paper); border-color:var(--line-2); }
+  .row{ margin-top:auto; display:flex; gap:8px; padding-top:4px; }
   .btn{ font-size:13px; letter-spacing:0.02em; color:var(--paper); background:var(--surface-2); border:1px solid var(--line); border-radius:9px; padding:9px 12px; cursor:pointer; transition:border-color .16s, filter .16s; flex:1; }
   .btn:hover{ border-color:var(--line-2); filter:brightness(1.12); }
   .btn.copied{ color:var(--aqua); border-color:rgba(127,216,201,0.55); }
 
-  .add-tile{
-    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;
-    min-height:200px; border:1.5px dashed var(--line-2); border-radius:var(--radius);
-    color:var(--muted); background:none; cursor:pointer; transition:color .16s, border-color .16s; font-size:14px;
-  }
+  .add-tile{ display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; min-height:200px; border:1.5px dashed var(--line-2); border-radius:var(--radius); color:var(--muted); background:none; cursor:pointer; transition:color .16s, border-color .16s; font-size:14px; }
   .add-tile:hover{ color:var(--paper); border-color:var(--river); }
   .add-tile svg{ width:26px; height:26px; }
-
   .empty{ grid-column:1/-1; text-align:center; padding:70px 20px; color:var(--muted); }
   .empty .big{ font-family:"Fraunces",serif; font-size:26px; color:var(--paper-dim); margin-bottom:8px; }
 
-  /* ── Overlays (viewer + modals) ───────────────────── */
   .overlay{ position:fixed; inset:0; z-index:100; display:none; background:rgba(6,4,12,0.86); backdrop-filter:blur(10px); padding:clamp(14px,3vw,40px); }
   .overlay.open{ display:grid; place-items:center; animation:fade .25s ease both; }
   @keyframes fade{ from{opacity:0;} to{opacity:1;} }
 
-  /* viewer */
-  .lb-panel{ display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); width:min(1040px,100%); max-height:88vh; background:var(--surface); border:1px solid var(--line-2); border-radius:16px; overflow:hidden; box-shadow:var(--shadow); position:relative; }
-  .lb-media{ position:relative; background:var(--ink-deep) center/cover; display:grid; place-items:center; min-height:280px; }
-  .lb-media img{ max-width:100%; max-height:88vh; object-fit:contain; display:block; }
-  .lb-media .glyph{ font-family:"Fraunces",serif; font-size:120px; color:rgba(255,255,255,0.34); }
-  .lb-side{ padding:clamp(22px,3vw,32px); display:flex; flex-direction:column; gap:16px; overflow-y:auto; }
-  .lb-name{ font-family:"Fraunces",serif; font-weight:600; font-size:clamp(24px,3vw,32px); line-height:1.05; margin:0; letter-spacing:-0.01em; }
-  .lb-tags{ display:flex; flex-wrap:wrap; gap:7px; }
-  .lb-label{ font-size:11px; letter-spacing:0.34em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
-  .prompt{ font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13.5px; line-height:1.65; color:var(--code-fg); background:var(--code-bg); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px; white-space:pre-wrap; word-break:break-word; max-height:38vh; overflow:auto; }
-  .lb-actions{ display:flex; gap:10px; margin-top:auto; padding-top:6px; }
+  /* centered style card */
+  .card-view{ position:relative; width:min(560px,100%); max-height:90vh; display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--line-2); border-radius:18px; overflow:hidden; box-shadow:var(--shadow); }
+  .cv-media{ position:relative; background:var(--ink-deep); }
+  .cv-img{ display:grid; place-items:center; max-height:48vh; min-height:220px; overflow:hidden; background-size:cover; background-position:center; }
+  .cv-img img{ width:100%; max-height:48vh; object-fit:contain; display:block; }
+  .cv-img .glyph{ font-family:"Fraunces",serif; font-size:92px; color:rgba(255,255,255,0.34); }
+  .cv-body{ padding:20px clamp(18px,3vw,26px) 22px; display:flex; flex-direction:column; gap:11px; overflow-y:auto; }
+  .cv-cat{ align-self:flex-start; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--river); background:var(--surface-2); border:1px solid var(--line); padding:4px 12px; border-radius:999px; }
+  .cv-name{ font-family:"Fraunces",serif; font-weight:600; font-size:clamp(23px,4vw,31px); line-height:1.05; margin:0; letter-spacing:-0.01em; }
+  .cv-plabel{ font-size:11px; letter-spacing:0.28em; text-transform:uppercase; color:var(--muted); margin-top:4px; }
+  .prompt{ font-family:"JetBrains Mono", ui-monospace, monospace; font-size:13px; line-height:1.65; color:var(--code-fg); background:var(--code-bg); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:15px; white-space:pre-wrap; word-break:break-word; max-height:30vh; overflow:auto; }
+  .cv-actions{ margin-top:4px; display:flex; gap:10px; }
+
   .btn-primary{ flex:1; font-size:14px; letter-spacing:0.02em; color:var(--ink-deep); background:var(--paper); border:none; border-radius:10px; padding:12px; cursor:pointer; transition:transform .12s, filter .16s; font-weight:500; }
   [data-theme="light"] .btn-primary{ background:#191521; color:#F1F3F2; }
   .btn-primary:hover{ filter:brightness(1.06); }
   .btn-primary:active{ transform:translateY(1px); }
   .btn-primary.copied{ background:var(--aqua); color:#08201c; }
 
-  .x-close, .lb-nav{ position:absolute; z-index:4; border:1px solid var(--line-2); background:rgba(16,13,24,0.72); color:#fff; width:42px; height:42px; border-radius:999px; cursor:pointer; display:grid; place-items:center; font-size:18px; transition:background-color .16s, border-color .16s; backdrop-filter:blur(4px); }
-  .x-close:hover, .lb-nav:hover{ background:var(--surface-2); border-color:#fff; }
-  .x-close{ top:14px; right:14px; }
-  .lb-nav.prev{ top:50%; left:14px; transform:translateY(-50%); }
-  .lb-nav.next{ top:50%; right:calc(41.5% + 14px); transform:translateY(-50%); }
-  .lb-counter{ position:absolute; bottom:14px; left:14px; z-index:4; font-size:12px; letter-spacing:0.05em; color:#e7e2ee; background:rgba(16,13,24,0.7); padding:5px 11px; border-radius:999px; border:1px solid rgba(255,255,255,0.12); font-variant-numeric:tabular-nums; backdrop-filter:blur(4px); }
+  .x-close, .cv-nav{ position:absolute; z-index:4; border:1px solid var(--line-2); background:rgba(16,13,24,0.72); color:#fff; width:42px; height:42px; border-radius:999px; cursor:pointer; display:grid; place-items:center; font-size:18px; transition:background-color .16s, border-color .16s; backdrop-filter:blur(4px); }
+  .x-close:hover, .cv-nav:hover{ background:var(--surface-2); border-color:#fff; }
+  .x-close{ top:12px; right:12px; }
+  .cv-nav.prev{ top:50%; left:12px; transform:translateY(-50%); }
+  .cv-nav.next{ top:50%; right:12px; transform:translateY(-50%); }
+  .lb-counter{ position:absolute; bottom:12px; left:12px; z-index:4; font-size:12px; letter-spacing:0.05em; color:#e7e2ee; background:rgba(16,13,24,0.7); padding:5px 11px; border-radius:999px; border:1px solid rgba(255,255,255,0.12); font-variant-numeric:tabular-nums; backdrop-filter:blur(4px); }
 
-  /* form modals */
   .modal{ width:min(560px,100%); max-height:90vh; overflow-y:auto; background:var(--surface); border:1px solid var(--line-2); border-radius:16px; box-shadow:var(--shadow); padding:clamp(20px,3vw,30px); position:relative; }
   .modal h2{ font-family:"Fraunces",serif; font-weight:600; font-size:26px; margin:0 0 20px; letter-spacing:-0.01em; }
   .field{ margin-bottom:18px; }
   .field > label{ display:block; font-size:11px; letter-spacing:0.28em; text-transform:uppercase; color:var(--muted); margin-bottom:9px; }
   .input, .textarea{ width:100%; background:var(--surface-2); border:1px solid var(--line); border-radius:10px; color:var(--paper); font:inherit; font-size:14.5px; padding:11px 13px; outline:none; transition:border-color .16s, box-shadow .16s; }
-  .textarea{ font-family:"JetBrains Mono", monospace; font-size:13px; line-height:1.6; resize:vertical; min-height:104px; }
+  .textarea{ font-family:"JetBrains Mono", monospace; font-size:13px; line-height:1.6; resize:vertical; min-height:120px; }
   .input:focus, .textarea:focus{ border-color:var(--line-2); box-shadow:0 0 0 3px var(--focus); }
-
   .img-edit{ display:flex; gap:14px; align-items:flex-start; }
   .img-preview{ position:relative; width:104px; height:130px; flex:none; border-radius:10px; overflow:hidden; background:var(--surface-2) center/cover; display:grid; place-items:center; border:1px solid var(--line); }
   .img-preview img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
@@ -251,22 +182,13 @@
   .mini:hover{ border-color:var(--line-2); filter:brightness(1.12); }
   .mini.danger{ color:#e07f8c; }
   .note{ font-size:11.5px; color:var(--muted); min-height:14px; }
-
-  .chipinput{ display:flex; flex-wrap:wrap; gap:7px; align-items:center; background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:8px 10px; cursor:text; transition:border-color .16s, box-shadow .16s; }
-  .chipinput.focus{ border-color:var(--line-2); box-shadow:0 0 0 3px var(--focus); }
-  .chipinput input{ flex:1; min-width:90px; background:none; border:none; outline:none; color:var(--paper); font:inherit; font-size:14px; padding:3px 2px; }
-  .tagpill{ display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--paper); background:var(--surface); border:1px solid var(--line-2); border-radius:7px; padding:3px 5px 3px 9px; }
-  .tagpill button{ border:none; background:none; color:var(--muted); cursor:pointer; font-size:15px; line-height:1; padding:0 2px; }
-  .tagpill button:hover{ color:var(--paper); }
-
   .modal-actions{ display:flex; gap:10px; margin-top:22px; }
   .modal-actions .btn-primary{ flex:1; }
   .btn-ghost{ font-size:14px; color:var(--paper); background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:12px 16px; cursor:pointer; transition:border-color .16s, filter .16s; }
   .btn-ghost:hover{ border-color:var(--line-2); filter:brightness(1.12); }
   .btn-ghost.danger{ color:#e07f8c; margin-right:auto; }
-
   .set-group{ margin-bottom:22px; }
-  .set-group h3{ font-family:"Space Grotesk",sans-serif; font-size:11px; letter-spacing:0.28em; text-transform:uppercase; color:var(--muted); margin:0 0 11px; font-weight:500; }
+  .set-group h3{ font-size:11px; letter-spacing:0.28em; text-transform:uppercase; color:var(--muted); margin:0 0 11px; font-weight:500; }
   .segmented{ display:inline-flex; background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:4px; gap:4px; }
   .segmented button{ font-size:13px; color:var(--paper-dim); background:none; border:none; border-radius:7px; padding:8px 18px; cursor:pointer; transition:background-color .16s, color .16s; }
   .segmented button[aria-pressed="true"]{ background:var(--paper); color:var(--ink-deep); font-weight:500; }
@@ -276,16 +198,11 @@
 
   footer{ border-top:1px solid var(--line); padding:26px 0 40px; color:var(--muted); font-size:12.5px; letter-spacing:0.04em; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; }
   footer .mark{ color:var(--river); }
-
   .toast{ position:fixed; left:50%; bottom:26px; transform:translate(-50%,20px); background:#191521; color:#F1F3F2; font-size:13px; font-weight:500; padding:10px 18px; border-radius:999px; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:300; letter-spacing:0.02em; border:1px solid rgba(255,255,255,0.12); }
   .toast.show{ opacity:1; transform:translate(-50%,0); }
   body.modal-open{ overflow:hidden; }
 
-  @media (max-width:760px){
-    .lb-panel{ grid-template-columns:1fr; max-height:90vh; }
-    .lb-media{ max-height:44vh; } .lb-media img{ max-height:44vh; }
-    .lb-nav.next{ right:14px; } .lb-nav{ top:auto; bottom:14px; transform:none; } .lb-nav.prev{ top:auto; }
-  }
+  @media (max-width:600px){ .cv-img{ max-height:40vh; } .cv-img img{ max-height:40vh; } }
   @media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } .plate:hover{ transform:none; } }
 </style>
 </head>
@@ -316,11 +233,11 @@
     <div class="searchrow">
       <label class="search">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input id="search" type="search" placeholder="Search styles, prompts, tags…" autocomplete="off" aria-label="Search styles" />
+        <input id="search" type="search" placeholder="Search styles, prompts, categories…" autocomplete="off" aria-label="Search styles" />
       </label>
       <span class="count" id="count"></span>
     </div>
-    <div class="tagbar" id="tagbar"></div>
+    <div class="catbar" id="catbar"></div>
   </div>
   <main class="grid" id="grid" aria-live="polite"></main>
 </div>
@@ -328,23 +245,26 @@
 <div class="wrap">
   <footer>
     <span>RiverGallery <span class="mark">✦</span> a personal codex of styles</span>
-    <span>same source, different soul</span>
+    <span id="footCredit">same source, different soul</span>
   </footer>
 </div>
 
-<!-- viewer -->
+<!-- centered style card -->
 <div class="overlay" id="viewer" role="dialog" aria-modal="true" aria-label="Style detail">
-  <div class="lb-panel">
-    <div class="lb-media" id="lbMedia"></div>
-    <button class="lb-nav prev" id="lbPrev" aria-label="Previous style">‹</button>
-    <button class="lb-nav next" id="lbNext" aria-label="Next style">›</button>
-    <button class="x-close" id="lbClose" aria-label="Close">×</button>
-    <span class="lb-counter" id="lbCounter"></span>
-    <div class="lb-side">
-      <div class="lb-tags" id="lbTags"></div>
-      <h2 class="lb-name" id="lbName"></h2>
-      <div><div class="lb-label">Prompt</div><div class="prompt" id="lbPrompt"></div></div>
-      <div class="lb-actions"><button class="btn-primary" id="lbCopy">copy prompt</button></div>
+  <div class="card-view">
+    <div class="cv-media">
+      <div class="cv-img" id="cvImg"></div>
+      <button class="x-close" id="cvClose" aria-label="Close">×</button>
+      <button class="cv-nav prev" id="cvPrev" aria-label="Previous style">‹</button>
+      <button class="cv-nav next" id="cvNext" aria-label="Next style">›</button>
+      <span class="lb-counter" id="cvCounter"></span>
+    </div>
+    <div class="cv-body">
+      <span class="cv-cat" id="cvCat"></span>
+      <h2 class="cv-name" id="cvName"></h2>
+      <div class="cv-plabel">Prompt</div>
+      <div class="prompt" id="cvPrompt"></div>
+      <div class="cv-actions"><button class="btn-primary" id="cvCopy">copy prompt</button></div>
     </div>
   </div>
 </div>
@@ -372,8 +292,9 @@
       <input class="input" id="edName" type="text" placeholder="e.g. Wet-Plate Nocturne" />
     </div>
     <div class="field">
-      <label>Tags</label>
-      <div class="chipinput" id="edTagWrap"><input id="edTagInput" type="text" placeholder="type a tag, press Enter" autocomplete="off" /></div>
+      <label for="edCategory">Category</label>
+      <input class="input" id="edCategory" list="catList" placeholder="e.g. Painting, Photography, Anime" autocomplete="off" />
+      <datalist id="catList"></datalist>
     </div>
     <div class="field">
       <label for="edPrompt">Prompt</label>
@@ -404,11 +325,13 @@
       <div class="set-row">
         <button class="mini" id="exportBtn" type="button">Export collection (.json)</button>
         <button class="mini" id="importBtn" type="button">Import collection…</button>
+        <button class="mini" id="loadFileBtn" type="button">Load styles.json from site</button>
         <button class="mini danger" id="resetBtn" type="button">Reset to samples</button>
       </div>
-      <div class="note" style="margin-top:10px;">Export to back up your styles or to move them into the hosted file. Import replaces your current collection.</div>
+      <div class="note" style="margin-top:10px;">Import accepts RiverGallery exports or any list of name / prompt / category (or section) entries. “Load styles.json” reads a file placed next to this page in your repo.</div>
       <input type="file" id="importFile" accept="application/json,.json" hidden />
     </div>
+    <div class="note" style="border-top:1px solid var(--line); padding-top:14px;">Inspired by the Clio Style Preview gallery. The community style set it can import was compiled by u/Dear-Spend-2865 and shared via lumenastrum/clio-style-preview (MIT) — please keep the credit.</div>
     <div class="modal-actions"><button class="btn-primary" id="setDone" type="button">Done</button></div>
   </div>
 </div>
@@ -423,12 +346,12 @@
     tagline: "Styles flow through — the ones worth keeping, stay.",
   };
   const STYLES = [
-    { name:"Wet-Plate Nocturne", prompt:"wet-plate collodion tintype portrait, silver halation and edge fogging, shallow antique brass-lens focus, deep shadow, candlelit key light, hand-poured emulsion streaks, 1860s studio, muted sepia-cyan tones, fine grain, museum plate scan", tags:["photographic","vintage","moody"], image:"" },
-    { name:"Risograph Bloom", prompt:"risograph print, two-colour separation fluoro-pink and teal, visible ink misregistration, coarse halftone dots, paper texture, flat poster shapes, limited palette, screenprint grain, 1970s zine energy", tags:["print","retro","graphic"], image:"" },
-    { name:"Hand-Painted Pastoral", prompt:"hand-painted animation background, soft gouache skies, layered watercolour foliage, warm afternoon light, gentle cel shading, painterly clouds, cozy rural scenery, storybook depth, subtle film grain", tags:["illustration","soft","painterly"], image:"" },
-    { name:"Brutalist Blueprint", prompt:"architectural blueprint linework, monochrome cyan on dark drafting paper, precise isometric geometry, technical annotations, hatching and section marks, brutalist concrete forms, drafting-pen ink, orthographic clarity", tags:["graphic","architectural","mono"], image:"" },
-    { name:"Iridescent Chrome", prompt:"liquid chrome render, iridescent oil-slick reflections, soft studio HDRI, glossy metaballs, subsurface glow, high-key gradient backdrop, octane render, hyper-clean product photography, pearlescent highlights", tags:["3d","futuristic","glossy"], image:"" },
-    { name:"Botanical Cyanotype", prompt:"cyanotype photogram of pressed botanicals, prussian-blue field, ghost-white silhouettes, sun-exposed paper texture, soft edge diffusion, herbarium specimen, 19th-century process, delicate fern and seedhead detail", tags:["print","botanical","vintage"], image:"" }
+    { name:"Wet-Plate Nocturne", prompt:"wet-plate collodion tintype portrait, silver halation and edge fogging, shallow antique brass-lens focus, deep shadow, candlelit key light, hand-poured emulsion streaks, 1860s studio, muted sepia-cyan tones, fine grain, museum plate scan", category:"Photography", image:"" },
+    { name:"Risograph Bloom", prompt:"risograph print, two-colour separation fluoro-pink and teal, visible ink misregistration, coarse halftone dots, paper texture, flat poster shapes, limited palette, screenprint grain, 1970s zine energy", category:"Print", image:"" },
+    { name:"Hand-Painted Pastoral", prompt:"hand-painted animation background, soft gouache skies, layered watercolour foliage, warm afternoon light, gentle cel shading, painterly clouds, cozy rural scenery, storybook depth, subtle film grain", category:"Painting", image:"" },
+    { name:"Brutalist Blueprint", prompt:"architectural blueprint linework, monochrome cyan on dark drafting paper, precise isometric geometry, technical annotations, hatching and section marks, brutalist concrete forms, drafting-pen ink, orthographic clarity", category:"Drawing", image:"" },
+    { name:"Iridescent Chrome", prompt:"liquid chrome render, iridescent oil-slick reflections, soft studio HDRI, glossy metaballs, subsurface glow, high-key gradient backdrop, octane render, hyper-clean product photography, pearlescent highlights", category:"3D", image:"" },
+    { name:"Botanical Cyanotype", prompt:"cyanotype photogram of pressed botanicals, prussian-blue field, ghost-white silhouettes, sun-exposed paper texture, soft edge diffusion, herbarium specimen, 19th-century process, delicate fern and seedhead detail", category:"Print", image:"" }
   ];
 </script>
 
@@ -436,13 +359,12 @@
 (function(){
   "use strict";
 
-  /* ---- storage that never throws (persists when hosted; in-memory otherwise) ---- */
   const mem = {};
   const store = {
     get(k){ try { return localStorage.getItem(k); } catch(e){ return (k in mem) ? mem[k] : null; } },
     set(k,v){ try { localStorage.setItem(k,v); } catch(e){ mem[k]=v; } }
   };
-  const KEY_STYLES = "rivergallery.v1.styles";
+  const KEY_STYLES = "rivergallery.v2.styles";
   const KEY_THEME  = "rivergallery.v1.theme";
 
   const DEFAULTS = (typeof STYLES !== "undefined" && Array.isArray(STYLES)) ? STYLES : [];
@@ -453,33 +375,36 @@
   if (G.title) setText("title", G.title);
   if (G.tagline) setText("tagline", G.tagline);
 
-  /* ---- model ---- */
   let uid = 1;
   const newId = () => "s"+(uid++)+"_"+Math.random().toString(36).slice(2,7);
+  function pickCategory(s){
+    if (!s) return "Uncategorized";
+    const c = s.category || s.section || s.tradition || s.group || (Array.isArray(s.tags) && s.tags[0]);
+    return c ? String(c) : "Uncategorized";
+  }
+  function pickPrompt(s){
+    const p = s && (s.prompt || s.prose || s.text || s.description);
+    return p ? String(p) : "";
+  }
   function normalize(arr){
-    return (arr||[]).map(s => ({
+    return (arr||[]).filter(Boolean).map(s => ({
       _id:newId(),
-      name:(s&&s.name)?String(s.name):"Untitled style",
-      prompt:(s&&s.prompt)?String(s.prompt):"",
-      tags:(s&&Array.isArray(s.tags))?s.tags.map(String):[],
-      image:(s&&s.image)?String(s.image):""
+      name:(s && s.name) ? String(s.name) : "Untitled style",
+      prompt:pickPrompt(s),
+      category:pickCategory(s),
+      image:(s && s.image) ? String(s.image) : ""
     }));
   }
-  const clean = (s) => ({ name:s.name, prompt:s.prompt, tags:s.tags, image:s.image });
-  function loadStyles(){
-    const raw = store.get(KEY_STYLES);
-    if (raw){ try { const p=JSON.parse(raw); if(Array.isArray(p)) return normalize(p); } catch(e){} }
-    return normalize(DEFAULTS);
-  }
+  const clean = (s) => ({ name:s.name, prompt:s.prompt, category:s.category, image:s.image });
+  function asArray(j){ return Array.isArray(j) ? j : (j && Array.isArray(j.styles) ? j.styles : null); }
   function persist(){ store.set(KEY_STYLES, JSON.stringify(styles.map(clean))); }
-  let styles = loadStyles();
 
-  /* ---- swatch for imageless styles ---- */
+  let styles = [];
+
   function hash(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
   function swatch(name){ const h=hash(name||"?"); const a=h%360, b=(a+34+(h>>4)%70)%360, ang=(h>>6)%180; return "linear-gradient("+ang+"deg, hsl("+a+" 52% 60%), hsl("+b+" 46% 38%))"; }
   const initial = (name) => ((name||"").trim()[0] || "✦").toUpperCase();
 
-  /* ---- theme ---- */
   const themeSeg = $("themeSeg");
   function applyTheme(t){
     const light = (t==="light");
@@ -491,42 +416,46 @@
   $("themeBtn").addEventListener("click", () => applyTheme(document.documentElement.getAttribute("data-theme")==="light" ? "dark" : "light"));
   themeSeg.querySelectorAll("button").forEach(b => b.addEventListener("click", () => applyTheme(b.dataset.themeVal)));
 
-  /* ---- state ---- */
-  const state = { search:"", tags:new Set(), visible:[] };
-  const grid=$("grid"), countEl=$("count"), tagbar=$("tagbar"), searchEl=$("search");
+  const state = { search:"", category:null, visible:[] };
+  const grid=$("grid"), countEl=$("count"), catbar=$("catbar"), searchEl=$("search");
 
-  function computeTags(){ const c={}; styles.forEach(s=>s.tags.forEach(t=>c[t]=(c[t]||0)+1)); return Object.keys(c).sort((a,b)=>c[b]-c[a]||a.localeCompare(b)); }
-
-  function renderTagbar(){
-    const tags = computeTags();
-    [...state.tags].forEach(t => { if(!tags.includes(t)) state.tags.delete(t); });
-    tagbar.innerHTML="";
-    tags.forEach(t => {
-      const b=document.createElement("button"); b.className="chip"; b.textContent=t;
-      b.setAttribute("aria-pressed", state.tags.has(t)?"true":"false");
-      b.addEventListener("click", () => { state.tags.has(t)?state.tags.delete(t):state.tags.add(t); renderTagbar(); render(); });
-      tagbar.appendChild(b);
+  function computeCategories(){
+    const m={}; styles.forEach(s=>{ const c=s.category||"Uncategorized"; m[c]=(m[c]||0)+1; });
+    return Object.keys(m).map(k=>({name:k,count:m[k]})).sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name));
+  }
+  function renderCats(){
+    const cats = computeCategories();
+    if (state.category!==null && !cats.some(c=>c.name===state.category)) state.category=null;
+    catbar.innerHTML="";
+    const all=document.createElement("button"); all.className="chip"; all.textContent="All";
+    all.setAttribute("aria-pressed", state.category===null?"true":"false");
+    all.addEventListener("click", ()=>{ state.category=null; renderCats(); render(); });
+    catbar.appendChild(all);
+    cats.forEach(c=>{
+      const b=document.createElement("button"); b.className="chip";
+      b.innerHTML = c.name + '<span class="n">'+c.count+'</span>';
+      b.setAttribute("aria-pressed", state.category===c.name?"true":"false");
+      b.addEventListener("click", ()=>{ state.category = (state.category===c.name?null:c.name); renderCats(); render(); });
+      catbar.appendChild(b);
     });
-    if (state.tags.size || state.search){
-      const c=document.createElement("button"); c.className="chip clear"; c.textContent="clear";
-      c.addEventListener("click", () => { state.tags.clear(); state.search=""; searchEl.value=""; renderTagbar(); render(); });
-      tagbar.appendChild(c);
+    if (state.search){
+      const c=document.createElement("button"); c.className="chip clear"; c.textContent="clear search";
+      c.addEventListener("click", ()=>{ state.search=""; searchEl.value=""; renderCats(); render(); });
+      catbar.appendChild(c);
     }
   }
 
   function matches(s){
-    if (state.tags.size){ let hit=false; state.tags.forEach(t=>{ if(s.tags.includes(t)) hit=true; }); if(!hit) return false; }
-    if (state.search){ const q=state.search.toLowerCase(); if(!((s.name+" "+s.prompt+" "+s.tags.join(" ")).toLowerCase().includes(q))) return false; }
+    if (state.category!==null && s.category!==state.category) return false;
+    if (state.search){ const q=state.search.toLowerCase(); if(!((s.name+" "+s.prompt+" "+(s.category||"")).toLowerCase().includes(q))) return false; }
     return true;
   }
 
   function fillMedia(el, s, big){
-    el.style.background = s.image ? "" : swatch(s.name);
     el.innerHTML = "";
-    const gl=document.createElement("span"); gl.className="glyph"; gl.textContent=initial(s.name);
-    el.appendChild(gl);
+    el.style.background = s.image ? (big ? "var(--ink-deep)" : "") : swatch(s.name);
+    const gl=document.createElement("span"); gl.className="glyph"; gl.textContent=initial(s.name); el.appendChild(gl);
     if (s.image){
-      el.style.background = big ? "var(--ink-deep)" : "";
       const img=document.createElement("img"); img.loading="lazy"; img.alt=s.name; img.src=s.image;
       img.addEventListener("error", () => { img.remove(); el.style.background=swatch(s.name); });
       el.appendChild(img);
@@ -539,12 +468,12 @@
     countEl.innerHTML = "<b>"+state.visible.length+"</b> of "+styles.length+" styles";
 
     if (!state.visible.length && !document.body.classList.contains("editing")){
-      grid.innerHTML = '<div class="empty"><div class="big">Nothing matches yet.</div><div>Try a different word, or clear the filters above.</div></div>';
+      grid.innerHTML = '<div class="empty"><div class="big">Nothing here yet.</div><div>Try a different word, clear the filters, or add a style.</div></div>';
       return;
     }
 
     state.visible.forEach((s,idx) => {
-      const card=document.createElement("article"); card.className="plate"; card.style.animationDelay=Math.min(idx*28,300)+"ms";
+      const card=document.createElement("article"); card.className="plate"; card.style.animationDelay=Math.min(idx*22,260)+"ms";
 
       const media=document.createElement("div");
       media.className="media"; media.setAttribute("role","button"); media.tabIndex=0; media.setAttribute("aria-label","Open "+s.name);
@@ -564,13 +493,12 @@
       tools.appendChild(ed); tools.appendChild(del); card.appendChild(tools);
 
       const body=document.createElement("div"); body.className="body";
-      const name=document.createElement("h3"); name.className="name"; name.textContent=s.name; body.appendChild(name);
-      if (s.tags.length){
-        const tg=document.createElement("div"); tg.className="tags";
-        s.tags.forEach(t=>{ const c=document.createElement("button"); c.className="tag"; c.textContent=t;
-          c.addEventListener("click", e=>{ e.stopPropagation(); if(!state.tags.has(t)) state.tags.add(t); renderTagbar(); render(); }); tg.appendChild(c); });
-        body.appendChild(tg);
+      if (s.category){
+        const cat=document.createElement("button"); cat.className="cat"; cat.textContent=s.category;
+        cat.addEventListener("click", ()=>{ state.category=s.category; renderCats(); render(); window.scrollTo({top:0,behavior:"smooth"}); });
+        body.appendChild(cat);
       }
+      const name=document.createElement("h3"); name.className="name"; name.textContent=s.name; body.appendChild(name);
       const row=document.createElement("div"); row.className="row";
       const copy=document.createElement("button"); copy.className="btn"; copy.textContent="copy prompt";
       copy.addEventListener("click", e=>{ e.stopPropagation(); copyText(s.prompt, copy); });
@@ -591,70 +519,57 @@
     const s = styles.find(x=>x._id===id); if(!s) return;
     if (!confirm('Delete "'+s.name+'"? This can\'t be undone.')) return;
     styles = styles.filter(x=>x._id!==id);
-    persist(); renderTagbar(); render(); toast("Style removed");
+    persist(); renderCats(); render(); toast("Style removed");
   }
 
-  /* ---- clipboard + toast ---- */
   const toastEl=$("toast"); let toastTimer;
-  function toast(msg){ toastEl.textContent=msg; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"),1500); }
+  function toast(msg){ toastEl.textContent=msg; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"),1600); }
   function copyText(text, btn){
     const done=()=>{ toast("prompt copied"); if(btn){ const old=btn.textContent; btn.textContent="copied ✓"; btn.classList.add("copied"); setTimeout(()=>{ btn.textContent=old; btn.classList.remove("copied"); },1300);} };
-    if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(()=>fallback(text,done)); }
-    else fallback(text,done);
+    if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(()=>fb(text,done)); } else fb(text,done);
   }
-  function fallback(text, done){ const ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); done(); }catch(e){ toast("copy failed"); } document.body.removeChild(ta); }
+  function fb(text, done){ const ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); done(); }catch(e){ toast("copy failed"); } document.body.removeChild(ta); }
 
-  /* ---- overlay helpers ---- */
   let lastFocus=null;
   function openOverlay(el){ el.classList.add("open"); document.body.classList.add("modal-open"); lastFocus=document.activeElement; }
   function closeOverlay(el){ el.classList.remove("open"); if(!document.querySelector(".overlay.open")) document.body.classList.remove("modal-open"); if(lastFocus&&lastFocus.focus)lastFocus.focus(); }
 
-  /* ---- viewer ---- */
-  const viewer=$("viewer"), lbMedia=$("lbMedia"), lbTags=$("lbTags"), lbName=$("lbName"), lbPrompt=$("lbPrompt"), lbCopy=$("lbCopy"), lbCounter=$("lbCounter");
-  function openViewer(id){ const pos=state.visible.findIndex(s=>s._id===id); if(pos<0) return; fillViewer(pos); openOverlay(viewer); $("lbClose").focus(); }
+  const viewer=$("viewer"), cvImg=$("cvImg"), cvCat=$("cvCat"), cvName=$("cvName"), cvPrompt=$("cvPrompt"), cvCopy=$("cvCopy"), cvCounter=$("cvCounter");
+  function openViewer(id){ const pos=state.visible.findIndex(s=>s._id===id); if(pos<0) return; fillViewer(pos); openOverlay(viewer); $("cvClose").focus(); }
   function fillViewer(pos){
     const s=state.visible[pos]; viewer.dataset.pos=pos;
-    fillMedia(lbMedia, s, true);
-    lbName.textContent=s.name; lbPrompt.textContent=s.prompt||"(no prompt yet)";
-    lbTags.innerHTML=""; s.tags.forEach(t=>{ const c=document.createElement("span"); c.className="tag"; c.textContent=t; lbTags.appendChild(c); });
-    lbCounter.textContent=(pos+1)+" / "+state.visible.length;
-    lbCopy.textContent="copy prompt"; lbCopy.classList.remove("copied");
-    lbCopy.onclick=()=>copyText(s.prompt, lbCopy);
+    fillMedia(cvImg, s, true);
+    if (s.category){ cvCat.textContent=s.category; cvCat.style.display=""; } else cvCat.style.display="none";
+    cvName.textContent=s.name; cvPrompt.textContent=s.prompt||"(no prompt yet)";
+    cvCounter.textContent=(pos+1)+" / "+state.visible.length;
+    cvPrompt.scrollTop=0;
+    cvCopy.textContent="copy prompt"; cvCopy.classList.remove("copied");
+    cvCopy.onclick=()=>copyText(s.prompt, cvCopy);
   }
   function stepViewer(d){ let p=parseInt(viewer.dataset.pos,10)+d; if(p<0)p=state.visible.length-1; if(p>=state.visible.length)p=0; fillViewer(p); }
-  $("lbClose").addEventListener("click", ()=>closeOverlay(viewer));
-  $("lbPrev").addEventListener("click", ()=>stepViewer(-1));
-  $("lbNext").addEventListener("click", ()=>stepViewer(1));
+  $("cvClose").addEventListener("click", ()=>closeOverlay(viewer));
+  $("cvPrev").addEventListener("click", ()=>stepViewer(-1));
+  $("cvNext").addEventListener("click", ()=>stepViewer(1));
   viewer.addEventListener("click", e=>{ if(e.target===viewer) closeOverlay(viewer); });
 
-  /* ---- editor ---- */
-  const editor=$("editor"), edPreview=$("edPreview"), edUrl=$("edUrl"), edNote=$("edNote"), edName=$("edName"), edPrompt=$("edPrompt"), edTagWrap=$("edTagWrap"), edTagInput=$("edTagInput"), edFile=$("edFile"), edDelete=$("edDelete");
-  let editorTarget=null, editImage="", editTags=[];
-
+  const editor=$("editor"), edPreview=$("edPreview"), edUrl=$("edUrl"), edNote=$("edNote"), edName=$("edName"), edCategory=$("edCategory"), edPrompt=$("edPrompt"), edFile=$("edFile"), edDelete=$("edDelete"), catList=$("catList");
+  let editorTarget=null, editImage="";
   function renderPreview(){
     edPreview.innerHTML="";
     if (editImage){ edPreview.style.background="var(--surface-2)"; const img=document.createElement("img"); img.src=editImage; img.alt=""; img.addEventListener("error",()=>{ img.remove(); edPreview.style.background=swatch(edName.value); }); edPreview.appendChild(img); }
     else { edPreview.style.background=swatch(edName.value||"?"); const gl=document.createElement("span"); gl.className="glyph"; gl.textContent=initial(edName.value); edPreview.appendChild(gl); }
   }
-  function renderTagPills(){
-    edTagWrap.querySelectorAll(".tagpill").forEach(n=>n.remove());
-    editTags.forEach((t,i)=>{ const p=document.createElement("span"); p.className="tagpill"; p.textContent=t;
-      const x=document.createElement("button"); x.type="button"; x.setAttribute("aria-label","Remove "+t); x.textContent="×";
-      x.addEventListener("click",()=>{ editTags.splice(i,1); renderTagPills(); }); p.appendChild(x);
-      edTagWrap.insertBefore(p, edTagInput); });
-  }
-  function addTag(v){ v=String(v).trim().replace(/,+$/,"").trim(); if(!v) return; if(!editTags.includes(v)) editTags.push(v); renderTagPills(); }
-
+  function fillCatList(){ catList.innerHTML=""; computeCategories().forEach(c=>{ const o=document.createElement("option"); o.value=c.name; catList.appendChild(o); }); }
   function openEditor(id){
     editorTarget=id;
     const s = id ? styles.find(x=>x._id===id) : null;
     edName.value = s ? s.name : "";
+    edCategory.value = s ? (s.category||"") : "";
     edPrompt.value = s ? s.prompt : "";
-    editTags = s ? s.tags.slice() : [];
     editImage = s ? s.image : "";
     edUrl.value = (editImage && editImage.indexOf("data:")!==0) ? editImage : "";
     edNote.textContent = (editImage && editImage.indexOf("data:")===0) ? "image uploaded from device ✓" : "";
-    edTagInput.value=""; renderTagPills(); renderPreview();
+    fillCatList(); renderPreview();
     edDelete.style.display = s ? "" : "none";
     setText("edTitle", s ? "Edit style" : "New style");
     openOverlay(editor); setTimeout(()=>edName.focus(),30);
@@ -671,23 +586,13 @@
     r.readAsDataURL(f); edFile.value="";
   });
   $("edRemoveImg").addEventListener("click", ()=>{ editImage=""; edUrl.value=""; edNote.textContent=""; renderPreview(); });
-
-  edTagWrap.addEventListener("click", ()=>edTagInput.focus());
-  edTagInput.addEventListener("focus", ()=>edTagWrap.classList.add("focus"));
-  edTagInput.addEventListener("blur", ()=>edTagWrap.classList.remove("focus"));
-  edTagInput.addEventListener("keydown", e=>{
-    if(e.key==="Enter"||e.key===","){ e.preventDefault(); addTag(edTagInput.value); edTagInput.value=""; }
-    else if(e.key==="Backspace" && !edTagInput.value && editTags.length){ editTags.pop(); renderTagPills(); }
-  });
-
   function saveEditor(){
     const name=edName.value.trim();
     if(!name){ toast("Give your style a name"); edName.focus(); return; }
-    if(edTagInput.value.trim()){ addTag(edTagInput.value); edTagInput.value=""; }
-    const rec={ name, prompt:edPrompt.value, tags:editTags.slice(), image:editImage };
+    const rec={ name, prompt:edPrompt.value, category:(edCategory.value.trim()||"Uncategorized"), image:editImage };
     if (editorTarget){ const s=styles.find(x=>x._id===editorTarget); if(s) Object.assign(s, rec); }
     else { styles.push(Object.assign({_id:newId()}, rec)); }
-    persist(); closeOverlay(editor); renderTagbar(); render(); toast("Style saved");
+    persist(); closeOverlay(editor); renderCats(); render(); toast("Style saved");
   }
   $("edSave").addEventListener("click", saveEditor);
   $("edCancel").addEventListener("click", ()=>closeOverlay(editor));
@@ -695,7 +600,6 @@
   editor.addEventListener("click", e=>{ if(e.target===editor) closeOverlay(editor); });
   edDelete.addEventListener("click", ()=>{ if(editorTarget){ const id=editorTarget; closeOverlay(editor); removeStyle(id); } });
 
-  /* ---- settings ---- */
   const settings=$("settings");
   $("settingsBtn").addEventListener("click", ()=>openOverlay(settings));
   $("setDone").addEventListener("click", ()=>closeOverlay(settings));
@@ -703,9 +607,8 @@
   settings.addEventListener("click", e=>{ if(e.target===settings) closeOverlay(settings); });
 
   function download(filename, text){
-    const blob=new Blob([text],{type:"application/json"});
-    const url=URL.createObjectURL(blob); const a=document.createElement("a");
-    a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+    const blob=new Blob([text],{type:"application/json"}); const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
     document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),1000);
   }
   $("exportBtn").addEventListener("click", ()=>{ download("rivergallery-styles.json", JSON.stringify(styles.map(clean), null, 2)); toast("Collection exported"); });
@@ -713,13 +616,22 @@
   $("importFile").addEventListener("change", ()=>{
     const f=$("importFile").files && $("importFile").files[0]; if(!f) return;
     const r=new FileReader();
-    r.onload=()=>{ try{ const p=JSON.parse(r.result); if(!Array.isArray(p)) throw 0; styles=normalize(p); persist(); renderTagbar(); render(); toast("Collection imported"); closeOverlay(settings); }catch(e){ toast("That file isn't a valid collection"); } };
+    r.onload=()=>{ try{ const arr=asArray(JSON.parse(r.result)); if(!arr) throw 0; styles=normalize(arr); persist(); renderCats(); render(); toast("Imported "+styles.length+" styles"); closeOverlay(settings); }catch(e){ toast("That file isn't a valid style list"); } };
     r.onerror=()=>toast("Could not read that file");
     r.readAsText(f); $("importFile").value="";
   });
-  $("resetBtn").addEventListener("click", ()=>{ if(confirm("Reset to the sample styles? Your current collection in this browser will be replaced.")){ styles=normalize(DEFAULTS); persist(); renderTagbar(); render(); toast("Reset to samples"); } });
+  async function loadFromSite(){
+    try{
+      const res=await fetch("styles.json", {cache:"no-store"});
+      if(!res.ok) throw 0;
+      const arr=asArray(await res.json()); if(!arr) throw 0;
+      styles=normalize(arr); persist(); renderCats(); render();
+      toast("Loaded "+styles.length+" styles from styles.json"); closeOverlay(settings);
+    }catch(e){ toast("No valid styles.json found next to this page"); }
+  }
+  $("loadFileBtn").addEventListener("click", loadFromSite);
+  $("resetBtn").addEventListener("click", ()=>{ if(confirm("Reset to the sample styles? Your current collection in this browser will be replaced.")){ styles=normalize(DEFAULTS); persist(); renderCats(); render(); toast("Reset to samples"); } });
 
-  /* ---- edit mode ---- */
   const editBtn=$("editBtn");
   editBtn.addEventListener("click", ()=>{
     const on=!document.body.classList.contains("editing");
@@ -729,17 +641,24 @@
   });
   $("newBtn").addEventListener("click", ()=>openEditor(null));
 
-  /* ---- search + global keys ---- */
   let sTimer;
-  searchEl.addEventListener("input", e=>{ clearTimeout(sTimer); const v=e.target.value; sTimer=setTimeout(()=>{ state.search=v.trim(); renderTagbar(); render(); },120); });
+  searchEl.addEventListener("input", e=>{ clearTimeout(sTimer); const v=e.target.value; sTimer=setTimeout(()=>{ state.search=v.trim(); renderCats(); render(); },120); });
   document.addEventListener("keydown", e=>{
     if (viewer.classList.contains("open")){ if(e.key==="Escape")closeOverlay(viewer); else if(e.key==="ArrowLeft")stepViewer(-1); else if(e.key==="ArrowRight")stepViewer(1); return; }
     if (e.key==="Escape"){ if(editor.classList.contains("open"))closeOverlay(editor); else if(settings.classList.contains("open"))closeOverlay(settings); }
   });
 
-  /* ---- go ---- */
-  renderTagbar();
-  render();
+  // ---- initial load: localStorage → styles.json (fresh browser) → seed ----
+  async function init(){
+    const raw = store.get(KEY_STYLES);
+    if (raw){ try{ const p=JSON.parse(raw); if(Array.isArray(p)){ styles=normalize(p); renderCats(); render(); return; } }catch(e){} }
+    try{
+      const res=await fetch("styles.json", {cache:"no-store"});
+      if(res.ok){ const arr=asArray(await res.json()); if(arr){ styles=normalize(arr); persist(); renderCats(); render(); return; } }
+    }catch(e){}
+    styles=normalize(DEFAULTS); renderCats(); render();
+  }
+  init();
 })();
 </script>
 </body>
