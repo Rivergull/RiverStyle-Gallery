@@ -115,12 +115,29 @@
   .chip.clear{ color:var(--muted); background:none; border-color:transparent; }
   .chip.clear:hover{ color:var(--paper); }
 
-  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(var(--card-min,256px),1fr)); gap:clamp(16px,2.4vw,26px); padding:28px 0 80px; }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(var(--grid-cols, 4), minmax(0, 1fr));
+    gap:clamp(16px, 2.2vw, 26px);
+    padding:28px 0 80px;
+  }
   .grid[data-cols="6"] .name{ font-size:17px; }
   .grid[data-cols="8"] .name{ font-size:15px; line-height:1.1; }
   .grid[data-cols="8"] .body{ padding:12px 12px 13px; gap:7px; }
   .grid[data-cols="8"] .btn{ font-size:12px; padding:7px 9px; }
   .grid[data-cols="8"] .cat{ font-size:10px; padding:2px 8px; }
+  @media (max-width: 1100px) {
+    .grid[data-cols="8"] { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  }
+  @media (max-width: 800px) {
+    .grid[data-cols="8"], .grid[data-cols="6"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  @media (max-width: 580px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px; }
+  }
+  @media (max-width: 360px) {
+    .grid { grid-template-columns: 1fr !important; }
+  }
   .plate{ position:relative; display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; animation:rise .5s cubic-bezier(.2,.7,.2,1) both; transition:border-color .22s, transform .22s; }
   .plate:hover{ border-color:var(--line-2); transform:translateY(-3px); }
   @keyframes rise{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:none;} }
@@ -249,7 +266,7 @@
 
   /* Responsive dynamic scaling for desktop and high-res screens */
   @media (min-width: 1400px) {
-    :root { --card-min: 285px; }
+    
     .grid { gap: 28px; }
     .name { font-size: 21px; }
     .search input { font-size: 16px; }
@@ -263,7 +280,7 @@
   }
 
   @media (min-width: 1900px) {
-    :root { --card-min: 320px; }
+    
     .wrap { max-width: min(1920px, 90vw); }
     .grid { gap: 32px; }
     .name { font-size: 23px; }
@@ -675,11 +692,10 @@
   const state = { search:"", view:null, showHidden:false, visible:[] };
   const grid=$("grid"), countEl=$("count"), catbar=$("catbar"), searchEl=$("search"), hiddenBar=$("hiddenBar"), unhideAll=$("unhideAll");
 
-  const GRID_COLS = { "4":"256px", "6":"168px", "8":"120px" };
   const density = $("density");
   function applyCols(n){
-    n = GRID_COLS[n] ? n : "4";
-    grid.style.setProperty("--card-min", GRID_COLS[n]);
+    n = (n === "6" || n === "8") ? n : "4";
+    grid.style.setProperty("--grid-cols", n);
     grid.dataset.cols = n;
     store.set(KEY_COLS, n);
     density.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.cols===n?"true":"false"));
