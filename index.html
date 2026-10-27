@@ -168,11 +168,11 @@
   .overlay.open{ display:grid; place-items:center; animation:fade .25s ease both; }
   @keyframes fade{ from{opacity:0;} to{opacity:1;} }
 
-  .card-view{ position:relative; width:min(560px,100%); max-height:90vh; display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--line-2); border-radius:18px; overflow:hidden; box-shadow:var(--shadow); }
+  .card-view{ position:relative; width:min(680px,94vw); max-height:93vh; display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--line-2); border-radius:20px; overflow:hidden; box-shadow:var(--shadow); }
   .cv-media{ position:relative; overflow:hidden; background:var(--ink-deep); flex:0 1 auto; min-height:0; }
   .cv-img{ display:flex; align-items:center; justify-content:center; overflow:hidden; background-size:cover; background-position:center; }
   .cv-img.is-swatch{ min-height:240px; }
-  .cv-img img{ max-width:100%; max-height:56vh; width:auto; height:auto; object-fit:contain; display:block; }
+  .cv-img img{ max-width:100%; max-height:64vh; width:auto; height:auto; object-fit:contain; display:block; }
   .cv-img .glyph{ font-family:"Fraunces",serif; font-size:92px; color:rgba(255,255,255,0.34); }
   .prompt-panel{ position:absolute; left:0; right:0; bottom:0; z-index:3; max-height:100%; transform:translateY(101%); transition:transform .3s cubic-bezier(.2,.7,.2,1); }
   .card-view.prompt-open .prompt-panel{ transform:translateY(0); }
@@ -248,12 +248,18 @@
   @media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } .plate:hover{ transform:none; } }
 
   /* Responsive dynamic scaling for desktop and high-res screens */
-  @media (min-width: 1500px) {
+  @media (min-width: 1400px) {
     :root { --card-min: 285px; }
     .grid { gap: 28px; }
     .name { font-size: 21px; }
     .search input { font-size: 16px; }
     .chip { font-size: 13.5px; padding: 7px 15px; }
+    /* Generous desktop lightbox modal */
+    .card-view { width: min(800px, 90vw); max-height: 94vh; border-radius: 22px; }
+    .cv-img img { max-height: 68vh; }
+    .cv-name { font-size: 30px; }
+    .cv-body { padding: 20px 28px 22px; gap: 12px; }
+    .btn-primary { font-size: 15px; padding: 14px; }
   }
 
   @media (min-width: 1900px) {
@@ -262,7 +268,166 @@
     .grid { gap: 32px; }
     .name { font-size: 23px; }
     .btn { font-size: 14px; padding: 11px 14px; }
+    /* Large ultrawide / 4K lightbox modal */
+    .card-view { width: min(920px, 88vw); max-height: 95vh; border-radius: 24px; }
+    .cv-img img { max-height: 72vh; }
+    .cv-name { font-size: 34px; }
   }
+
+  /* Carousel 3D Stage (Pokemon Pocket Pack Selector inspired) */
+  .carousel-stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1400px;
+    gap: clamp(14px, 2.8vw, 36px);
+    perspective: 1200px;
+  }
+
+  .peek-card {
+    position: relative;
+    flex: 0 0 clamp(160px, 16vw, 240px);
+    aspect-ratio: 4/5.4;
+    border-radius: 18px;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 50px -15px rgba(0,0,0,0.7);
+    opacity: 0.44;
+    filter: brightness(0.62) saturate(0.85);
+    transition: opacity .25s ease, filter .25s ease, transform .28s cubic-bezier(.2,.7,.2,1), border-color .25s ease;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+  }
+
+  .peek-card.prev {
+    transform: perspective(1000px) rotateY(12deg) scale(0.85);
+  }
+
+  .peek-card.next {
+    transform: perspective(1000px) rotateY(-12deg) scale(0.85);
+  }
+
+  .peek-card:hover,
+  .peek-card:focus-visible {
+    opacity: 0.88;
+    filter: brightness(0.92) saturate(1);
+    border-color: rgba(255, 255, 255, 0.38);
+    box-shadow: 0 24px 60px -15px rgba(0,0,0,0.85);
+  }
+
+  .peek-card.prev:hover,
+  .peek-card.prev:focus-visible {
+    transform: perspective(1000px) rotateY(4deg) scale(0.91) translateX(6px);
+  }
+
+  .peek-card.next:hover,
+  .peek-card.next:focus-visible {
+    transform: perspective(1000px) rotateY(-4deg) scale(0.91) translateX(-6px);
+  }
+
+  .peek-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .peek-media {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .peek-media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .peek-media .glyph {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: "Fraunces", serif;
+    font-size: 54px;
+    color: rgba(255,255,255,0.3);
+  }
+
+  .peek-name {
+    padding: 11px 14px;
+    background: rgba(14, 11, 22, 0.92);
+    backdrop-filter: blur(8px);
+    font-family: "Fraunces", serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    color: var(--paper);
+  }
+
+  .peek-arrow {
+    position: absolute;
+    top: 50%;
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background: rgba(14, 11, 22, 0.78);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 20px;
+    z-index: 4;
+    transform: translateY(-50%);
+    backdrop-filter: blur(4px);
+    transition: background-color .15s, transform .15s, color .15s;
+    pointer-events: none;
+  }
+
+  .peek-card.prev .peek-arrow { left: 12px; }
+  .peek-card.next .peek-arrow { right: 12px; }
+
+  .peek-card:hover .peek-arrow {
+    background: var(--paper);
+    color: var(--ink-deep);
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  /* On desktop where peek cards exist, hide inner image arrows so image is clean */
+  @media (min-width: 900px) {
+    .card-view .cv-nav {
+      display: none !important;
+    }
+  }
+
+  /* On mobile / tablets, hide peek cards and fallback to touch / arrows */
+  @media (max-width: 899px) {
+    .peek-card {
+      display: none !important;
+    }
+    .carousel-stage {
+      gap: 0;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -315,23 +480,44 @@
   </footer>
 </div>
 
-<!-- centered style card -->
+<!-- centered style card with carousel 3D stage -->
 <div class="overlay" id="viewer" role="dialog" aria-modal="true" aria-label="Style detail">
-  <div class="card-view">
-    <div class="cv-media">
-      <div class="cv-img" id="cvImg"></div>
-      <div class="prompt-panel"><div class="prompt" id="cvPrompt"></div></div>
-      <button class="cv-fav" id="cvFav" aria-label="Add to favorites" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.9 6 6.6.6-5 4.4 1.5 6.5L12 16.9 5.5 20.5 7 14l-5-4.4 6.6-.6z"/></svg></button>
-      <button class="x-close" id="cvClose" aria-label="Close">×</button>
-      <button class="cv-nav prev" id="cvPrev" aria-label="Previous style">‹</button>
-      <button class="cv-nav next" id="cvNext" aria-label="Next style">›</button>
-      <span class="lb-counter" id="cvCounter"></span>
+  <div class="carousel-stage">
+    <!-- Prev peek card -->
+    <div class="peek-card prev" id="peekPrev" role="button" aria-label="Previous style" tabindex="0">
+      <div class="peek-inner">
+        <div class="peek-media" id="peekPrevImg"></div>
+        <div class="peek-name" id="peekPrevName"></div>
+      </div>
+      <div class="peek-arrow">‹</div>
     </div>
-    <div class="cv-body">
-      <span class="cv-cat" id="cvCat"></span>
-      <h2 class="cv-name" id="cvName"></h2>
-      <button class="cv-toggle" id="cvToggle" aria-expanded="false"><span id="cvToggleLabel">Show prompt</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="cv-actions"><button class="btn-primary" id="cvCopy">copy prompt</button></div>
+
+    <!-- Active Center Card -->
+    <div class="card-view">
+      <div class="cv-media">
+        <div class="cv-img" id="cvImg"></div>
+        <div class="prompt-panel"><div class="prompt" id="cvPrompt"></div></div>
+        <button class="cv-fav" id="cvFav" aria-label="Add to favorites" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.9 6 6.6.6-5 4.4 1.5 6.5L12 16.9 5.5 20.5 7 14l-5-4.4 6.6-.6z"/></svg></button>
+        <button class="x-close" id="cvClose" aria-label="Close">×</button>
+        <button class="cv-nav prev" id="cvPrev" aria-label="Previous style">‹</button>
+        <button class="cv-nav next" id="cvNext" aria-label="Next style">›</button>
+        <span class="lb-counter" id="cvCounter"></span>
+      </div>
+      <div class="cv-body">
+        <span class="cv-cat" id="cvCat"></span>
+        <h2 class="cv-name" id="cvName"></h2>
+        <button class="cv-toggle" id="cvToggle" aria-expanded="false"><span id="cvToggleLabel">Show prompt</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="cv-actions"><button class="btn-primary" id="cvCopy">copy prompt</button></div>
+      </div>
+    </div>
+
+    <!-- Next peek card -->
+    <div class="peek-card next" id="peekNext" role="button" aria-label="Next style" tabindex="0">
+      <div class="peek-inner">
+        <div class="peek-media" id="peekNextImg"></div>
+        <div class="peek-name" id="peekNextName"></div>
+      </div>
+      <div class="peek-arrow">›</div>
     </div>
   </div>
 </div>
@@ -722,6 +908,11 @@
 
   const viewer=$("viewer"), cvImg=$("cvImg"), cvCat=$("cvCat"), cvName=$("cvName"), cvPrompt=$("cvPrompt"), cvCopy=$("cvCopy"), cvCounter=$("cvCounter"), cvToggle=$("cvToggle"), cvToggleLabel=$("cvToggleLabel"), cvFav=$("cvFav");
   const cardView=viewer.querySelector(".card-view");
+  const carouselStage=viewer.querySelector(".carousel-stage");
+  const peekPrev=$("peekPrev"), peekNext=$("peekNext");
+  const peekPrevImg=$("peekPrevImg"), peekNextImg=$("peekNextImg");
+  const peekPrevName=$("peekPrevName"), peekNextName=$("peekNextName");
+
   function updateCvFav(s){ cvFav.classList.toggle("on", !!s.favorite); cvFav.setAttribute("aria-pressed", s.favorite?"true":"false"); cvFav.setAttribute("aria-label",(s.favorite?"Remove ":"Add ")+s.name+" to favorites"); cvFav.title=s.favorite?"Remove from Favorites":"Add to Favorites"; }
   let promptOpen=false;
   function setPromptOpen(open){ promptOpen=open; cardView.classList.toggle("prompt-open", open); cvToggle.setAttribute("aria-expanded", open?"true":"false"); cvToggle.classList.toggle("open", open); cvToggleLabel.textContent=open?"Hide prompt":"Show prompt"; if(open) cvPrompt.scrollTop=0; }
@@ -738,12 +929,49 @@
     cvFav.onclick=()=>{ setFavorite(s._id, !s.favorite); updateCvFav(s); };
     cvCopy.textContent="copy prompt"; cvCopy.classList.remove("copied");
     cvCopy.onclick=()=>copyText(s.prompt, cvCopy);
+
+    // Update peek carousel cards (adjacent styles)
+    if (peekPrev && peekNext) {
+      if (state.visible.length > 1) {
+        peekPrev.style.display = "";
+        peekNext.style.display = "";
+        const prevPos = (pos - 1 + state.visible.length) % state.visible.length;
+        const nextPos = (pos + 1) % state.visible.length;
+        const prevS = state.visible[prevPos];
+        const nextS = state.visible[nextPos];
+
+        fillMedia(peekPrevImg, prevS, false);
+        peekPrevName.textContent = prevS.name;
+        peekPrev.setAttribute("aria-label", "Previous: " + prevS.name);
+        peekPrev.title = "Previous: " + prevS.name;
+
+        fillMedia(peekNextImg, nextS, false);
+        peekNextName.textContent = nextS.name;
+        peekNext.setAttribute("aria-label", "Next: " + nextS.name);
+        peekNext.title = "Next: " + nextS.name;
+      } else {
+        peekPrev.style.display = "none";
+        peekNext.style.display = "none";
+      }
+    }
   }
   function stepViewer(d){ let p=parseInt(viewer.dataset.pos,10)+d; if(p<0)p=state.visible.length-1; if(p>=state.visible.length)p=0; fillViewer(p); }
   $("cvClose").addEventListener("click", ()=>closeOverlay(viewer));
   $("cvPrev").addEventListener("click", ()=>stepViewer(-1));
   $("cvNext").addEventListener("click", ()=>stepViewer(1));
-  viewer.addEventListener("click", e=>{ if(e.target===viewer) closeOverlay(viewer); });
+
+  if (peekPrev) {
+    peekPrev.addEventListener("click", () => stepViewer(-1));
+    peekPrev.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); stepViewer(-1); } });
+  }
+  if (peekNext) {
+    peekNext.addEventListener("click", () => stepViewer(1));
+    peekNext.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); stepViewer(1); } });
+  }
+
+  viewer.addEventListener("click", e=>{
+    if (e.target === viewer || e.target === carouselStage) closeOverlay(viewer);
+  });
 
   const editor=$("editor"), edPreview=$("edPreview"), edUrl=$("edUrl"), edNote=$("edNote"), edName=$("edName"), edCategory=$("edCategory"), edPrompt=$("edPrompt"), edFile=$("edFile"), edDelete=$("edDelete"), catList=$("catList");
   let editorTarget=null, editImage="";
