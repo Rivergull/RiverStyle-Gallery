@@ -62,7 +62,7 @@
   }
   ::selection{ background:rgba(111,180,232,0.32); color:#fff; }
   button{ font-family:inherit; }
-  .wrap{ max-width:1240px; margin:0 auto; padding:0 clamp(18px,4vw,44px); }
+  .wrap{ width:100%; max-width:min(1720px,92vw); margin:0 auto; padding:0 clamp(18px,3.5vw,48px); }
 
   header{ padding:clamp(30px,6vw,72px) 0 24px; }
   .masthead-top{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
@@ -246,6 +246,23 @@
 
   @media (max-width:600px){ .cv-img{ max-height:42vh; } .cv-img img{ max-height:42vh; } }
   @media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } .plate:hover{ transform:none; } }
+
+  /* Responsive dynamic scaling for desktop and high-res screens */
+  @media (min-width: 1500px) {
+    :root { --card-min: 285px; }
+    .grid { gap: 28px; }
+    .name { font-size: 21px; }
+    .search input { font-size: 16px; }
+    .chip { font-size: 13.5px; padding: 7px 15px; }
+  }
+
+  @media (min-width: 1900px) {
+    :root { --card-min: 320px; }
+    .wrap { max-width: min(1920px, 90vw); }
+    .grid { gap: 32px; }
+    .name { font-size: 23px; }
+    .btn { font-size: 14px; padding: 11px 14px; }
+  }
 </style>
 </head>
 <body>
