@@ -193,7 +193,10 @@
   .btn-primary:active{ transform:translateY(1px); }
   .btn-primary.copied{ background:var(--aqua); color:#08201c; }
 
-  .x-close, .cv-nav, .cv-fav{ position:absolute; z-index:4; border:1px solid var(--line-2); background:rgba(16,13,24,0.72); color:#fff; width:42px; height:42px; border-radius:999px; cursor:pointer; display:grid; place-items:center; font-size:18px; transition:background-color .16s, border-color .16s, color .16s; backdrop-filter:blur(4px); }
+  .x-close, .cv-nav, .cv-fav{ position:absolute; z-index:4; border:1px solid var(--line-2); background:rgba(16,13,24,0.72); color:#fff; width:42px; height:42px; border-radius:999px; cursor:pointer; display:grid; place-items:center; font-size:18px; backdrop-filter:blur(4px); opacity:0; pointer-events:none; transition:opacity .25s ease, background-color .16s, border-color .16s, color .16s; }
+  .cv-media:hover .x-close, .cv-media:hover .cv-nav, .cv-media:hover .cv-fav,
+  .x-close:focus-visible, .cv-nav:focus-visible, .cv-fav:focus-visible{ opacity:1; pointer-events:auto; }
+  @media (hover: none){ .x-close, .cv-nav, .cv-fav{ opacity:1; pointer-events:auto; } }
   .x-close:hover, .cv-nav:hover{ background:var(--surface-2); border-color:#fff; }
   .x-close{ top:12px; left:12px; }
   .cv-nav.prev{ top:50%; left:12px; transform:translateY(-50%); }
