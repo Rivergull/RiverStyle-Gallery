@@ -850,7 +850,7 @@
       const name=document.createElement("h3"); name.className="name"; name.textContent=s.name; body.appendChild(name);
       const row=document.createElement("div"); row.className="row";
       const copy=document.createElement("button"); copy.className="btn"; copy.textContent="copy prompt";
-      copy.addEventListener("click", e=>{ e.stopPropagation(); copyText(s.prompt, copy); });
+      copy.addEventListener("click", e=>{ e.stopPropagation(); copyText(formatCopyPrompt(s), copy); });
       row.appendChild(copy);
       if (state.showHidden){
         const un=document.createElement("button"); un.className="btn unhide"; un.textContent="unhide";
@@ -896,6 +896,12 @@
 
   const toastEl=$("toast"); let toastTimer;
   function toast(msg){ toastEl.textContent=msg; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove("show"),1700); }
+  function formatCopyPrompt(s){
+    const p = (s && s.prompt ? s.prompt.trim() : "");
+    if (!p) return "Style: " + s.name + ". Subject: ";
+    const dot = p.endsWith(".") ? "" : ".";
+    return "Style: " + s.name + ": " + p + dot + " Subject: ";
+  }
   function copyText(text, btn){
     const done=()=>{ toast("prompt copied"); if(btn){ const old=btn.textContent; btn.textContent="copied ✓"; btn.classList.add("copied"); setTimeout(()=>{ btn.textContent=old; btn.classList.remove("copied"); },1300);} };
     if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(()=>fbcopy(text,done)); } else fbcopy(text,done);
@@ -928,7 +934,7 @@
     updateCvFav(s);
     cvFav.onclick=()=>{ setFavorite(s._id, !s.favorite); updateCvFav(s); };
     cvCopy.textContent="copy prompt"; cvCopy.classList.remove("copied");
-    cvCopy.onclick=()=>copyText(s.prompt, cvCopy);
+    cvCopy.onclick=()=>copyText(formatCopyPrompt(s), cvCopy);
 
     // Update peek carousel cards (adjacent styles)
     if (peekPrev && peekNext) {
